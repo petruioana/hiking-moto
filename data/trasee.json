@@ -4,8 +4,12 @@
       "name": "Sulferberg Trail",
       "km": 7.21,
       "difficulty": "Medium",
-      "photo": "images_json/poza1.jpg",
-      "gpx": "hiking/traseu1.gpx"
+      "photo": "images_json/poza1.jpeg",
+      "gpx": "hiking/traseu1.gpx",
+      "trailhead": {
+        "name": "Sulferberg Parking",
+        "coords": "47.12345, 11.54321"
+      }
     }
   ],
   "motorcycle": [
@@ -14,7 +18,11 @@
       "km": 45,
       "difficulty": "Easy",
       "photo": "images_json/honda.jpeg",
-      "gpx": "motorcycle/justtotest.gpx"
+      "gpx": "motorcycle/justtotest.gpx",
+      "trailhead": {
+        "name": "Start Point",
+        "coords": "47.54321, 11.98765"
+      }
     }
   ]
 }
