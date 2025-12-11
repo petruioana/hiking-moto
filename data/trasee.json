@@ -1,1 +1,19 @@
+{
+  "hiking": [
+    {
+      "name": "Sulferberg Trail",
+      "difficulty": "Medium",
+      "photo": "images/petru_ioana.jpeg",
+      "gpx": "hiking/sulferberg.gpx"
+    }
+  ],
+  "motorcycle": [
+    {
+      "name": "Sunday Ride",
+      "difficulty": "Easy",
+      "photo": "images/motorcycle.jpeg",
+      "gpx": "motorcycle/sunday_ride.gpx"
+    }
+  ]
+}
 
