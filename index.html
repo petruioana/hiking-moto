@@ -31,27 +31,52 @@
     header.site-header{
       position:fixed;
       left:0;right:0;top:0;
-      height:86px;
+      height:180px;
       background:linear-gradient(180deg,#000 0%, #0b0b0b 100%);
       display:flex;
       align-items:center;
       justify-content:center;
       border-bottom:1px solid var(--border);
       z-index:800;
-      padding:10px 20px;
+      padding:18px 28px;
       box-sizing:border-box;
+    }
+    .site-header .hero-content{
+      display:flex;
+      align-items:center;
+      gap:18px;
     }
     .site-header .title {
       text-align:center;
       line-height:1;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
     }
     .site-header h1{margin:0;font-size:20px;font-weight:700;letter-spacing:0.2px}
-    .site-header h2{margin:4px 0 0;font-size:15px;font-weight:500;color:var(--muted)}
+    .site-header h2{margin:0;font-size:15px;font-weight:500;color:var(--muted)}
+    .site-header .subtitle{font-size:14px;color:var(--muted);font-weight:500}
+    .hero-photo{
+      width:104px;
+      height:104px;
+      border-radius:50%;
+      overflow:hidden;
+      border:3px solid var(--frame);
+      box-shadow:0 0 0 2px rgba(255,255,255,0.06);
+      background:#0d0d0d;
+      flex-shrink:0;
+    }
+    .hero-photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
 
     /* container under header */
     .layout {
-      margin-top: 106px; /* header height + gap */
-      height: calc(100vh - 106px);
+      margin-top: 200px; /* header height + gap */
+      height: calc(100vh - 200px);
       display: grid;
       grid-template-columns: 360px 1fr 360px;
       gap: 18px;
@@ -126,8 +151,9 @@
     }
     .route-card .meta .right {
       display:flex;
-      gap:8px;
-      align-items:center;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
     }
     .btn {
       padding:6px 8px;
@@ -137,6 +163,10 @@
       background:#0e0e0e;
       color:var(--text);
       cursor:pointer;
+      text-decoration:none;
+      text-align:center;
+      display:inline-block;
+      min-width:110px;
     }
     .btn.primary{
       background:var(--accent);
@@ -189,16 +219,27 @@
       .map-wrap { order:1; height:60vh }
       .panel { order:2; min-height:120px }
       .panel.right { order:3 }
-      .site-header { position:relative }
-      .layout { margin-top:0; }
+      .site-header { position:relative; height:auto; padding:14px 14px 18px; }
+      .site-header .hero-content{ flex-direction:column; text-align:center; }
+      .hero-photo{ width:88px; height:88px; }
+      .layout { margin-top:0; height:auto; }
     }
   </style>
 </head>
 <body>
   <header class="site-header">
-    <div class="title">
-      <h1>Hiking and Motorcycle with</h1>
-      <h2>Petru &amp; Ioana</h2>
+    <div class="hero-content">
+      <div class="hero-photo left">
+        <img src="images/petru_ioana.jpeg" alt="Petru and Ioana" loading="lazy" />
+      </div>
+      <div class="title">
+        <h1>Hiking and Motorcycle with</h1>
+        <h2>Petru &amp; Ioana</h2>
+        <div class="subtitle">Discover hiking trails and motorcycle routes</div>
+      </div>
+      <div class="hero-photo right">
+        <img src="images/motorcycle.jpeg" alt="Motorcycle" loading="lazy" />
+      </div>
     </div>
   </header>
 
@@ -427,6 +468,23 @@
     }
     right.appendChild(btnPark);
 
+    // download button
+    const downloadBtn = document.createElement('a');
+    downloadBtn.className = 'btn primary';
+    downloadBtn.textContent = 'Download GPX';
+    downloadBtn.setAttribute('download', '');
+    if(gpx){
+      downloadBtn.href = gpx;
+      downloadBtn.title = 'Download this GPX file';
+    } else {
+      downloadBtn.href = 'javascript:void(0)';
+      downloadBtn.setAttribute('aria-disabled','true');
+      downloadBtn.style.opacity = '0.5';
+      downloadBtn.style.pointerEvents = 'none';
+      downloadBtn.title = 'No GPX available';
+    }
+    right.appendChild(downloadBtn);
+
     meta.appendChild(right);
     card.appendChild(meta);
 
@@ -486,7 +544,7 @@
   function escapeHtml(s){
     if(!s) return '';
     return String(s).replace(/[&<>"'`]/g, function(ch){
-      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;', '`':'&#96;'})[ch];
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'" :'&#39;','`':'&#96;'})[ch];
     });
   }
 
@@ -494,3 +552,4 @@
   </script>
 </body>
 </html>
+
