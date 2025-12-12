@@ -1,4 +1,4 @@
-{
+
   "hiking": [
     {
       "name": "Sulferberg Trail",
@@ -11,13 +11,9 @@
       "name": "Rochehaut",
       "km": 15.14,
       "difficulty": "Medium-Hard",
-      "gpx": "hiking/bouillon.gpx",
+      "gpx": "hiking/buillon.gpx",
       "trailhead": { "name": "Rocheaut", "coords": "49.839902, 5.000091" }
     }
-  ],
-
-  "hiking_upcoming": [
-    { "name": "New Hill Trail", "gpx": "hiking/newhill.gpx" }
   ],
 
   "motorcycle": [
@@ -28,7 +24,5 @@
       "gpx": "motorcycle/justtotest.gpx",
       "trailhead": { "name": "Start Point", "coords": "47.54321, 11.98765" }
     }
-  ],
-
-  "motorcycle_upcoming": []
+  ]
 }
