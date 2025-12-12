@@ -6,23 +6,20 @@
       "difficulty": "Medium",
       "gpx": "hiking/traseu1.gpx",
       "trailhead": { "name": "Westhouter", "coords": "50.799148, 2.746559" }
-    }
-  ],
-  "hiking_upcoming": [
-    { "name": "New Hill Trail", "gpx": "hiking/newhill.gpx" }
-    {
-  "hiking": [
+    },
     {
       "name": "Rochehaut",
-      "km": 15,14,
+      "km": 15.14,
       "difficulty": "Medium-Hard",
       "gpx": "hiking/buillon.gpx",
       "trailhead": { "name": "Rocheaut", "coords": "49.839902, 5.000091" }
     }
   ],
+
   "hiking_upcoming": [
     { "name": "New Hill Trail", "gpx": "hiking/newhill.gpx" }
   ],
+
   "motorcycle": [
     {
       "name": "Sunday Ride",
@@ -32,5 +29,6 @@
       "trailhead": { "name": "Start Point", "coords": "47.54321, 11.98765" }
     }
   ],
+
   "motorcycle_upcoming": []
 }
