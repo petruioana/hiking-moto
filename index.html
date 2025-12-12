@@ -385,26 +385,44 @@
       box-shadow:var(--shadow-md);
     }
 
+    /* Custom scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 12px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #777;
+    }
+    ::-webkit-scrollbar-button {
+      display: none; /* Hide arrow buttons */
+    }
+
     /* responsive */
     @media (max-width: 1000px) {
       .app, .layout { grid-template-columns: 1fr; padding:10px; }
       .map-wrap { order:1; height:60vh }
       .panel { order:2; min-height:120px }
       .panel.right { order:3 }
-      .site-header { 
-        position:relative; 
-        height:auto; 
-        padding:16px 14px; 
+      .site-header {
+        position:relative;
+        height:auto;
+        padding:16px 14px;
         min-height:auto;
       }
-      .site-header .hero-content{ 
+      .site-header .hero-content{
         flex-wrap: wrap;
         justify-content: center;
         gap:12px;
       }
-      .hero-photo{ 
-        width:70px; 
-        height:70px; 
+      .hero-photo{
+        width:70px;
+        height:70px;
         order: 1;
       }
       .site-header .title {
