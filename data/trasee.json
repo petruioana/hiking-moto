@@ -4,36 +4,21 @@
       "name": "Sulferberg Trail",
       "km": 7.21,
       "difficulty": "Medium",
-      "photo": "images_json/poza1.jpg",
       "gpx": "hiking/traseu1.gpx",
-      "trailhead": {
-        "name": "Sulferberg Parking",
-        "coords": "50.797510,2.746212"
-      }
-    },
-    {
-      "name": "Alpine Path",
-      "km": 10,
-      "difficulty": "Hard",
-      "photo": "images_json/poza2.jpg",
-      "gpx": "hiking/traseu2.gpx",
-      "trailhead": {
-        "name": "Alpine Parking",
-        "coords": "47.67890, 11.56789"
-      }
+      "trailhead": { "name": "Sulferberg Parking", "coords": "47.12345, 11.54321" }
     }
+  ],
+  "hiking_upcoming": [
+    { "name": "New Hill Trail", "gpx": "hiking/newhill.gpx" }
   ],
   "motorcycle": [
     {
       "name": "Sunday Ride",
       "km": 45,
       "difficulty": "Easy",
-      "photo": "images_json/honda.jpeg",
       "gpx": "motorcycle/justtotest.gpx",
-      "trailhead": {
-        "name": "Start Point",
-        "coords": "47.54321, 11.98765"
-      }
+      "trailhead": { "name": "Start Point", "coords": "47.54321, 11.98765" }
     }
-  ]
+  ],
+  "motorcycle_upcoming": []
 }
