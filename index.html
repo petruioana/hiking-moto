@@ -105,6 +105,26 @@
     }
 
     .panel h3 { margin:0; font-size:18px; display:flex; justify-content:space-between; align-items:center; }
+    .toggle {
+      display:inline-flex;
+      border:1px solid var(--border);
+      border-radius:999px;
+      overflow:hidden;
+      background:#101010;
+    }
+    .toggle button{
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:6px 12px;
+      cursor:pointer;
+      font-size:13px;
+      min-width:88px;
+    }
+    .toggle button.active{
+      background:var(--accent);
+      color:#fff;
+    }
 
     .search {
       display:flex;
@@ -161,6 +181,36 @@
       align-items:flex-end;
       gap:6px;
     }
+    .upcoming-list{
+      overflow:auto;
+      padding-right:6px;
+      display:none;
+      gap:8px;
+      flex-direction:column;
+    }
+    .upcoming-item{
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:8px;
+      padding:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      gap:10px;
+    }
+    .upcoming-item .name{
+      font-weight:600;
+      color:var(--text);
+      flex:1;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .upcoming-item .actions{
+      display:flex;
+      gap:8px;
+      flex-shrink:0;
+    }
     .btn {
       padding:6px 8px;
       font-size:13px;
@@ -180,14 +230,6 @@
       color:#fff;
     }
     .muted { color:var(--muted); font-size:13px }
-
-    .panel .footer-upcoming {
-      margin-top:auto;
-      padding-top:8px;
-      border-top:1px dashed rgba(255,255,255,0.03);
-      font-size:13px;
-      color:var(--muted);
-    }
 
     /* Map container with frame */
     .map-wrap {
@@ -273,16 +315,16 @@
       <h3>Hiking Routes
         <span class="muted" id="hiking-count"></span>
       </h3>
+      <div class="toggle" data-kind="hiking">
+        <button class="toggle-btn active" data-view="completed">Completed</button>
+        <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      </div>
       <div class="search">
         <input id="search-hiking" placeholder="Search hiking routes..." />
         <button class="btn" id="clear-hiking">Clear</button>
       </div>
       <div class="list" id="hiking-list" aria-live="polite"></div>
-
-      <div class="footer-upcoming" id="hiking-upcoming">
-        <strong>Upcoming</strong>
-        <div id="hiking-upcoming-list" style="margin-top:6px;color:var(--muted)"></div>
-      </div>
+      <div class="upcoming-list" id="hiking-upcoming-list" aria-live="polite"></div>
     </aside>
 
     <!-- MAP -->
@@ -302,16 +344,16 @@
       <h3>Motorcycle Routes
         <span class="muted" id="motor-count"></span>
       </h3>
+      <div class="toggle" data-kind="motorcycle">
+        <button class="toggle-btn active" data-view="completed">Completed</button>
+        <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      </div>
       <div class="search">
         <input id="search-motor" placeholder="Search motorcycle routes..." />
         <button class="btn" id="clear-motor">Clear</button>
       </div>
       <div class="list" id="motor-list" aria-live="polite"></div>
-
-      <div class="footer-upcoming" id="motor-upcoming">
-        <strong>Upcoming</strong>
-        <div id="motor-upcoming-list" style="margin-top:6px;color:var(--muted)"></div>
-      </div>
+      <div class="upcoming-list" id="motor-upcoming-list" aria-live="polite"></div>
     </aside>
   </div>
 
@@ -322,7 +364,9 @@
 
   <script>
   // --- Config ---
-  const DATA_URL = './data/trasee.json'; // must exist
+  const DATA_URL = './data/trasee.json'; // completed routes
+  const HIKING_UPCOMING_URL = './data/hiking_upcoming.json';
+  const MOTO_UPCOMING_URL = './data/moto_upcoming.json';
   // Esri Satellite tiles
   const ESRI_SAT = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
   const OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -341,6 +385,11 @@
 
   let currentGPX = null;
   let parkingMarkers = [];
+  const state = {
+    completed: null,
+    upcoming: { hiking: [], motorcycle: [] },
+    view: { hiking: 'completed', motorcycle: 'completed' }
+  };
 
   // toggle tiles
   let satOn = false;
@@ -375,71 +424,139 @@
   }
 
   // load JSON and render lists
-  fetch(DATA_URL)
-    .then(r => {
-      if(!r.ok) throw new Error('Failed to load JSON');
-      return r.json();
-    })
-    .then(data => {
-      window.appData = data;
-      renderLists(data);
-    })
-    .catch(err => {
-      console.error(err);
-      document.getElementById('hiking-list').innerText = 'Failed to load data';
-      document.getElementById('motor-list').innerText = 'Failed to load data';
+  Promise.all([
+    fetch(DATA_URL).then(r => { if(!r.ok) throw new Error('Failed to load JSON'); return r.json(); }),
+    fetch(HIKING_UPCOMING_URL).then(r => r.ok ? r.json() : []),
+    fetch(MOTO_UPCOMING_URL).then(r => r.ok ? r.json() : []),
+  ])
+  .then(([completed, hikingUpcoming, motoUpcoming]) => {
+    state.completed = completed || {};
+    state.upcoming.hiking = hikingUpcoming || [];
+    state.upcoming.motorcycle = motoUpcoming || [];
+    setupToggles();
+    setupFilters();
+    renderColumn('hiking');
+    renderColumn('motorcycle');
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById('hiking-list').innerText = 'Failed to load data';
+    document.getElementById('motor-list').innerText = 'Failed to load data';
+  });
+
+  function setupToggles(){
+    document.querySelectorAll('.toggle').forEach(toggle=>{
+      const kind = toggle.dataset.kind;
+      toggle.querySelectorAll('.toggle-btn').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          toggle.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          state.view[kind] = btn.dataset.view;
+          renderColumn(kind);
+        });
+      });
     });
+  }
 
-  function renderLists(data){
-    const hikingList = document.getElementById('hiking-list');
-    const motorList = document.getElementById('motor-list');
-    hikingList.innerHTML = '';
-    motorList.innerHTML = '';
-
-    // hiking
-    (data.hiking || []).forEach((t,i) => {
-      const card = createRouteCard(t, 'hiking', i);
-      hikingList.appendChild(card);
-    });
-
-    // upcoming hiking
-    const hUpcoming = document.getElementById('hiking-upcoming-list');
-    hUpcoming.innerHTML = '';
-    (data.hiking_upcoming || []).forEach(u => {
-      const el = document.createElement('div');
-      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><span>${escapeHtml(u.name)}</span>
-      ${u.gpx ? `<a class="muted" href="${u.gpx}" download>Download GPX</a>` : ''}</div>`;
-      hUpcoming.appendChild(el);
-    });
-
-    // motorcycle
-    (data.motorcycle || []).forEach((t,i) => {
-      const card = createRouteCard(t, 'motorcycle', i);
-      motorList.appendChild(card);
-    });
-
-    const mUpcoming = document.getElementById('motor-upcoming-list');
-    mUpcoming.innerHTML = '';
-    (data.motorcycle_upcoming || []).forEach(u => {
-      const el = document.createElement('div');
-      el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><span>${escapeHtml(u.name)}</span>
-      ${u.gpx ? `<a class="muted" href="${u.gpx}" download>Download GPX</a>` : ''}</div>`;
-      mUpcoming.appendChild(el);
-    });
-
-    document.getElementById('hiking-count').textContent = `${(data.hiking||[]).length} routes`;
-    document.getElementById('motor-count').textContent = `${(data.motorcycle||[]).length} routes`;
-
-    // wire filters
+  function setupFilters(){
     document.getElementById('search-hiking').addEventListener('input', (e)=> filterList('hiking', e.target.value));
     document.getElementById('search-motor').addEventListener('input', (e)=> filterList('motorcycle', e.target.value));
     document.getElementById('clear-hiking').addEventListener('click', ()=> { document.getElementById('search-hiking').value=''; filterList('hiking',''); });
     document.getElementById('clear-motor').addEventListener('click', ()=> { document.getElementById('search-motor').value=''; filterList('motorcycle',''); });
   }
 
+  function renderColumn(kind){
+    const view = state.view[kind] || 'completed';
+    const completedList = document.getElementById(kind==='hiking' ? 'hiking-list' : 'motor-list');
+    const upcomingList = document.getElementById(kind==='hiking' ? 'hiking-upcoming-list' : 'motor-upcoming-list');
+
+    if(view === 'completed'){
+      completedList.style.display = 'block';
+      upcomingList.style.display = 'none';
+      renderCompleted(kind, completedList);
+      updateCount(kind, (state.completed?.[kind] || []).length, 'routes');
+    }else{
+      completedList.style.display = 'none';
+      upcomingList.style.display = 'flex';
+      renderUpcoming(kind, upcomingList);
+      updateCount(kind, (state.upcoming[kind] || []).length, 'upcoming');
+    }
+    filterList(kind, (document.getElementById(kind==='hiking'?'search-hiking':'search-motor').value||'')); // respect current search
+  }
+
+  function updateCount(kind, count, label){
+    const el = document.getElementById(kind==='hiking' ? 'hiking-count' : 'motor-count');
+    if(el) el.textContent = `${count} ${label}`;
+  }
+
+  function renderCompleted(kind, container){
+    container.innerHTML = '';
+    (state.completed?.[kind] || []).forEach((t,i) => {
+      const card = createRouteCard(t, kind, i);
+      container.appendChild(card);
+    });
+  }
+
+  function renderUpcoming(kind, container){
+    container.innerHTML = '';
+    const items = state.upcoming[kind] || [];
+    if(!items.length){
+      const empty = document.createElement('div');
+      empty.className = 'muted';
+      empty.textContent = 'No upcoming routes';
+      container.appendChild(empty);
+      return;
+    }
+    items.forEach((u, idx)=>{
+      const row = document.createElement('div');
+      row.className = 'upcoming-item';
+      row.dataset.search = u.name || '';
+
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = u.name || 'Route';
+      row.appendChild(name);
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      const showBtn = document.createElement('button');
+      showBtn.className = 'btn';
+      showBtn.textContent = 'Show';
+      showBtn.disabled = !u.gpx;
+      showBtn.title = u.gpx ? 'Show this GPX on the map' : 'No GPX available';
+      showBtn.addEventListener('click', ()=> {
+        if(!u.gpx){ alert('No GPX available for this route'); return; }
+        loadAndShowGPX(u.gpx);
+      });
+      actions.appendChild(showBtn);
+
+      const dlBtn = document.createElement('a');
+      dlBtn.className = 'btn primary';
+      dlBtn.textContent = 'Download GPX';
+      dlBtn.setAttribute('download','');
+      if(u.gpx){
+        dlBtn.href = u.gpx;
+      }else{
+        dlBtn.href = 'javascript:void(0)';
+        dlBtn.setAttribute('aria-disabled','true');
+        dlBtn.style.opacity = '0.5';
+        dlBtn.style.pointerEvents = 'none';
+      }
+      actions.appendChild(dlBtn);
+
+      row.appendChild(actions);
+      container.appendChild(row);
+    });
+  }
+
   function filterList(kind, q){
     q = (q||'').toLowerCase().trim();
-    const container = kind==='hiking' ? document.getElementById('hiking-list') : document.getElementById('motor-list');
+    const view = state.view[kind] || 'completed';
+    const container = view === 'completed'
+      ? (kind==='hiking' ? document.getElementById('hiking-list') : document.getElementById('motor-list'))
+      : (kind==='hiking' ? document.getElementById('hiking-upcoming-list') : document.getElementById('motor-upcoming-list'));
+
     Array.from(container.children).forEach(card=>{
       const txt = (card.dataset.search||'').toLowerCase();
       card.style.display = txt.includes(q) ? '' : 'none';
@@ -478,19 +595,20 @@
     });
     right.appendChild(btnShow);
 
-    // parking button (if coords exist)
-    const btnPark = document.createElement('button');
-    btnPark.className = 'btn';
-    btnPark.textContent = 'Parking';
-    btnPark.title = 'Show parking point on map';
-    if(traseu.trailhead && traseu.trailhead.coords){
-      btnPark.addEventListener('click', ()=> {
-        addParkingPoint(traseu.trailhead.coords, traseu.trailhead.name || name);
-      });
-    } else {
-      btnPark.disabled = true;
+    if(kind !== 'motorcycle'){
+      const btnPark = document.createElement('button');
+      btnPark.className = 'btn';
+      btnPark.textContent = 'Parking';
+      btnPark.title = 'Show parking point on map';
+      if(traseu.trailhead && traseu.trailhead.coords){
+        btnPark.addEventListener('click', ()=> {
+          addParkingPoint(traseu.trailhead.coords, traseu.trailhead.name || name);
+        });
+      } else {
+        btnPark.disabled = true;
+      }
+      right.appendChild(btnPark);
     }
-    right.appendChild(btnPark);
 
     // download button
     const downloadBtn = document.createElement('a');
@@ -576,5 +694,4 @@
   </script>
 </body>
 </html>
-
 
