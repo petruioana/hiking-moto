@@ -233,7 +233,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:12px;
       box-shadow:var(--shadow-sm);
     }
     .route-card:hover {
@@ -243,21 +243,20 @@
       transform:translateY(-2px);
     }
     .route-card .meta {
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:space-between;
+      width:100%;
     }
     .route-card .meta .left{
       display:flex;
       flex-direction:column;
       gap:4px;
     }
-    .route-card .meta .right {
+    .route-card .actions {
       display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:6px;
+      gap:8px;
+      justify-content:center;
+      width:100%;
+      padding-top:8px;
+      border-top:1px solid var(--border-light);
     }
     .upcoming-list{
       overflow:auto;
@@ -273,11 +272,11 @@
       border-radius:10px;
       padding:14px;
       display:flex;
-      align-items:center;
-      justify-content:space-between;
+      flex-direction:column;
       background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
       gap:12px;
       box-shadow:var(--shadow-sm);
+      margin-bottom:12px;
     }
     .upcoming-item:hover {
       border-color:var(--border);
@@ -285,20 +284,11 @@
       box-shadow:var(--shadow-md);
       transform:translateY(-1px);
     }
-    .upcoming-item .name{
+    .upcoming-item .name {
+      width:100%;
       font-weight:600;
       color:var(--text);
-      flex:1;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .upcoming-item .actions{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      flex-shrink:0;
-      width:110px;
+      margin-bottom:4px;
     }
     .btn {
       padding:8px 14px;
@@ -641,14 +631,14 @@
       return;
     }
     items.forEach((u, idx)=>{
-      const row = document.createElement('div');
-      row.className = 'upcoming-item';
-      row.dataset.search = u.name || '';
+      const item = document.createElement('div');
+      item.className = 'upcoming-item';
+      item.dataset.search = u.name || '';
 
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = u.name || 'Route';
-      row.appendChild(name);
+      item.appendChild(name);
 
       const actions = document.createElement('div');
       actions.className = 'actions';
@@ -678,8 +668,8 @@
       }
       actions.appendChild(dlBtn);
 
-      row.appendChild(actions);
-      container.appendChild(row);
+      item.appendChild(actions);
+      container.appendChild(item);
     });
   }
 
@@ -707,27 +697,39 @@
     card.className = 'route-card';
     card.dataset.search = `${name} ${km} ${difficulty}`;
 
+    // meta section with text info (top, left-aligned)
     const meta = document.createElement('div');
     meta.className = 'meta';
     meta.innerHTML = `<div class="left"><strong>${escapeHtml(name)}</strong>
       <div class="muted">${escapeHtml(km)} ${difficulty ? ' • ' + escapeHtml(difficulty) : ''}</div>
     </div>`;
+    card.appendChild(meta);
 
-    const right = document.createElement('div');
-    right.className = 'right';
+    // extra area for any detailed lines
+    const details = document.createElement('div');
+    details.className = 'details muted';
+    details.style.fontSize = '13px';
+    details.innerHTML = (traseu.trailhead && traseu.trailhead.name ? `Start: ${escapeHtml(traseu.trailhead.name)}<br/>` : '') +
+                        (traseu.trailhead && traseu.trailhead.coords ? `Coords: ${escapeHtml(traseu.trailhead.coords)}` : '');
+    if(details.innerHTML) card.appendChild(details);
+
+    // actions section with buttons (bottom, centered)
+    const actions = document.createElement('div');
+    actions.className = 'actions';
 
     // show button
     const btnShow = document.createElement('button');
     btnShow.className = 'btn';
-    btnShow.textContent = 'Show GPX';
+    btnShow.textContent = 'Show';
     btnShow.disabled = !gpx;
     btnShow.title = gpx ? 'Show this GPX on the map' : 'No GPX available';
     btnShow.addEventListener('click', ()=> {
       if(!gpx){ alert('No GPX available for this route'); return; }
       loadAndShowGPX(gpx);
     });
-    right.appendChild(btnShow);
+    actions.appendChild(btnShow);
 
+    // parking button (only for hiking)
     if(kind !== 'motorcycle'){
       const btnPark = document.createElement('button');
       btnPark.className = 'btn';
@@ -740,7 +742,7 @@
       } else {
         btnPark.disabled = true;
       }
-      right.appendChild(btnPark);
+      actions.appendChild(btnPark);
     }
 
     // download button
@@ -758,18 +760,9 @@
       downloadBtn.style.pointerEvents = 'none';
       downloadBtn.title = 'No GPX available';
     }
-    right.appendChild(downloadBtn);
+    actions.appendChild(downloadBtn);
 
-    meta.appendChild(right);
-    card.appendChild(meta);
-
-    // extra area for any detailed lines
-    const details = document.createElement('div');
-    details.className = 'details muted';
-    details.style.fontSize = '13px';
-    details.innerHTML = (traseu.trailhead && traseu.trailhead.name ? `Start: ${escapeHtml(traseu.trailhead.name)}<br/>` : '') +
-                        (traseu.trailhead && traseu.trailhead.coords ? `Coords: ${escapeHtml(traseu.trailhead.coords)}` : '');
-    if(details.innerHTML) card.appendChild(details);
+    card.appendChild(actions);
 
     return card;
   }
