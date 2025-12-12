@@ -677,3 +677,39 @@
     }).addTo(map);
 
     // store
+    currentGPX = gpxLayer;
+  }
+
+  function varOrDefault(name, def){
+    try{
+      return getComputedStyle(document.documentElement).getPropertyValue(name) || def;
+    }catch(e){ return def; }
+  }
+
+  function addParkingPoint(coordsStr, title){
+    // coordsStr like "47.12, 11.54"
+    if(!coordsStr) return;
+    const parts = coordsStr.split(',').map(s=>parseFloat(s.trim()));
+    if(parts.length<2 || isNaN(parts[0]) || isNaN(parts[1])){
+      alert('Invalid coords: ' + coordsStr);
+      return;
+    }
+    const m = L.marker([parts[0], parts[1]]).addTo(map).bindPopup(`<strong>${escapeHtml(title||'Parking')}</strong><br>${escapeHtml(coordsStr)}`);
+    parkingMarkers.push(m);
+    map.panTo([parts[0], parts[1]]);
+    m.openPopup();
+  }
+
+  function escapeHtml(s){
+    if(!s) return '';
+    return String(s).replace(/[&<>"'`]/g, function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'" :'&#39;','`':'&#96;'})[ch];
+    });
+  }
+
+  // small helper: add keyboard support or other UI features later
+  </script>
+</body>
+</html>
+
+
