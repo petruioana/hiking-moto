@@ -38,6 +38,7 @@
       font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
+      overflow:auto; /* Allow desktop scrolling */
     }
     .app {
       display: grid;
@@ -45,7 +46,7 @@
       gap: 18px;
       padding: 18px;
       box-sizing: border-box;
-      height: 100vh;
+      min-height: 100vh;
       align-items: start;
     }
 
@@ -110,7 +111,7 @@
     /* container under header */
     .layout {
       margin-top: 200px; /* header height + gap */
-      height: calc(100vh - 200px);
+      min-height: calc(100vh - 200px);
       display: grid;
       grid-template-columns: 360px 1fr 360px;
       gap: 18px;
@@ -137,12 +138,12 @@
       box-shadow:var(--shadow-md);
     }
 
-    .panel h3 { 
-      margin:0; 
-      font-size:18px; 
+    .panel h3 {
+      margin:0;
+      font-size:18px;
       font-weight:600;
-      display:flex; 
-      justify-content:space-between; 
+      display:flex;
+      justify-content:space-between;
       align-items:center;
       color:var(--text);
       letter-spacing:-0.2px;
@@ -243,21 +244,21 @@
       transform:translateY(-2px);
     }
     .route-card .meta {
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:space-between;
+      margin-bottom:8px;
     }
     .route-card .meta .left{
       display:flex;
       flex-direction:column;
       gap:4px;
     }
-    .route-card .meta .right {
+    .route-card .actions {
       display:flex;
-      flex-direction:column;
-      align-items:flex-end;
-      gap:6px;
+      gap:8px;
+      justify-content:center;
+      width:100%;
+      padding-top:8px;
+      border-top:1px solid var(--border-light);
+      margin-top:8px;
     }
     .upcoming-list{
       overflow:auto;
@@ -295,10 +296,12 @@
     }
     .upcoming-item .actions{
       display:flex;
-      flex-direction:column;
-      gap:6px;
-      flex-shrink:0;
-      width:110px;
+      gap:8px;
+      justify-content:center;
+      width:100%;
+      padding-top:8px;
+      border-top:1px solid var(--border-light);
+      margin-top:8px;
     }
     .btn {
       padding:8px 14px;
@@ -396,20 +399,20 @@
       .map-wrap { order:1; height:60vh }
       .panel { order:2; min-height:120px }
       .panel.right { order:3 }
-      .site-header { 
-        position:relative; 
-        height:auto; 
-        padding:16px 14px; 
+      .site-header {
+        position:relative;
+        height:auto;
+        padding:16px 14px;
         min-height:auto;
       }
-      .site-header .hero-content{ 
+      .site-header .hero-content{
         flex-wrap: wrap;
         justify-content: center;
         gap:12px;
       }
-      .hero-photo{ 
-        width:70px; 
-        height:70px; 
+      .hero-photo{
+        width:70px;
+        height:70px;
         order: 1;
       }
       .site-header .title {
@@ -428,8 +431,8 @@
         <img src="images/petru_ioana.jpeg" alt="Petru and Ioana" loading="lazy" />
       </div>
       <div class="title">
-        <h1>GPX Routes — by Petru &amp; Ioana</h1>
-        <h2>Hiking Trails &amp; Motorcycle Rides</h2>
+        <h1>GPX Routes — by Petru & Ioana</h1>
+        <h2>Hiking Trails & Motorcycle Rides</h2>
         <div class="subtitle">Pick a route, explore the map, and download GPX for free.</div>
       </div>
       <div class="hero-photo right">
@@ -641,14 +644,14 @@
       return;
     }
     items.forEach((u, idx)=>{
-      const row = document.createElement('div');
-      row.className = 'upcoming-item';
-      row.dataset.search = u.name || '';
+      const item = document.createElement('div');
+      item.className = 'upcoming-item';
+      item.dataset.search = u.name || '';
 
       const name = document.createElement('div');
       name.className = 'name';
       name.textContent = u.name || 'Route';
-      row.appendChild(name);
+      item.appendChild(name);
 
       const actions = document.createElement('div');
       actions.className = 'actions';
@@ -678,8 +681,8 @@
       }
       actions.appendChild(dlBtn);
 
-      row.appendChild(actions);
-      container.appendChild(row);
+      item.appendChild(actions);
+      container.appendChild(item);
     });
   }
 
@@ -707,14 +710,25 @@
     card.className = 'route-card';
     card.dataset.search = `${name} ${km} ${difficulty}`;
 
+    // route name and info at top
     const meta = document.createElement('div');
     meta.className = 'meta';
     meta.innerHTML = `<div class="left"><strong>${escapeHtml(name)}</strong>
       <div class="muted">${escapeHtml(km)} ${difficulty ? ' • ' + escapeHtml(difficulty) : ''}</div>
     </div>`;
+    card.appendChild(meta);
 
-    const right = document.createElement('div');
-    right.className = 'right';
+    // coordinates/details in middle
+    const details = document.createElement('div');
+    details.className = 'details muted';
+    details.style.fontSize = '13px';
+    details.innerHTML = (traseu.trailhead && traseu.trailhead.name ? `Start: ${escapeHtml(traseu.trailhead.name)}<br/>` : '') +
+                        (traseu.trailhead && traseu.trailhead.coords ? `Coords: ${escapeHtml(traseu.trailhead.coords)}` : '');
+    if(details.innerHTML) card.appendChild(details);
+
+    // buttons at bottom
+    const actions = document.createElement('div');
+    actions.className = 'actions';
 
     // show button
     const btnShow = document.createElement('button');
@@ -726,7 +740,7 @@
       if(!gpx){ alert('No GPX available for this route'); return; }
       loadAndShowGPX(gpx);
     });
-    right.appendChild(btnShow);
+    actions.appendChild(btnShow);
 
     if(kind !== 'motorcycle'){
       const btnPark = document.createElement('button');
@@ -740,7 +754,7 @@
       } else {
         btnPark.disabled = true;
       }
-      right.appendChild(btnPark);
+      actions.appendChild(btnPark);
     }
 
     // download button
@@ -758,18 +772,9 @@
       downloadBtn.style.pointerEvents = 'none';
       downloadBtn.title = 'No GPX available';
     }
-    right.appendChild(downloadBtn);
+    actions.appendChild(downloadBtn);
 
-    meta.appendChild(right);
-    card.appendChild(meta);
-
-    // extra area for any detailed lines
-    const details = document.createElement('div');
-    details.className = 'details muted';
-    details.style.fontSize = '13px';
-    details.innerHTML = (traseu.trailhead && traseu.trailhead.name ? `Start: ${escapeHtml(traseu.trailhead.name)}<br/>` : '') +
-                        (traseu.trailhead && traseu.trailhead.coords ? `Coords: ${escapeHtml(traseu.trailhead.coords)}` : '');
-    if(details.innerHTML) card.appendChild(details);
+    card.appendChild(actions);
 
     return card;
   }
