@@ -20,6 +20,13 @@
       "difficulty": "Medium-Hard",
       "gpx": "hiking/buillon.gpx",
       "trailhead": { "name": "Rocheaut", "coords": "49.839902, 5.000091" }
+    },
+    {
+      "name": "Gasthuisbossen",
+      "km": 10.69,
+      "difficulty": "Easy",
+      "gpx": "hiking/gasthuisbossen.gpx",
+      "trailhead": { "name": "Gasthuisbossen", "coords": "50.823243, 2.935696" }
     }
   ],
 
