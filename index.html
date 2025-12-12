@@ -160,6 +160,9 @@
     .list {
       overflow:auto;
       padding-right:6px;
+      display:block;
+      flex:1;
+      min-height:0;
     }
 
     .route-card {
@@ -195,6 +198,8 @@
       display:none;
       gap:8px;
       flex-direction:column;
+      flex:1;
+      min-height:0;
     }
     .upcoming-item{
       border:1px solid rgba(255,255,255,0.06);
@@ -652,3 +657,23 @@
 
     return card;
   }
+
+  // Load GPX and display
+  function loadAndShowGPX(url){
+    clearGPX(); // remove previous
+    clearParkings(); // optionally clear markers
+
+    // show loading state?
+    const gpxLayer = new L.GPX(url, {
+      async: true,
+      polyline_options: { color: varOrDefault('--accent','#e74c3c'), weight: 4, opacity: 0.9 },
+      marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null }
+    }).on('loaded', function(e){
+      currentGPX = gpxLayer;
+      map.fitBounds(gpxLayer.getBounds(), {padding:[40,40]});
+    }).on('error', function(e){
+      alert('Failed to load GPX: ' + url);
+      console.error(e);
+    }).addTo(map);
+
+    // store
