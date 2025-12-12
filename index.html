@@ -105,6 +105,12 @@
     }
 
     .panel h3 { margin:0; font-size:18px; display:flex; justify-content:space-between; align-items:center; }
+    .toggle-wrapper {
+      display:flex;
+      justify-content:center;
+      width:100%;
+      margin-top:8px;
+    }
     .toggle {
       display:inline-flex;
       border:1px solid var(--border);
@@ -119,7 +125,9 @@
       padding:6px 12px;
       cursor:pointer;
       font-size:13px;
+      flex:1;
       min-width:88px;
+      text-align:center;
     }
     .toggle button.active{
       background:var(--accent);
@@ -315,9 +323,11 @@
       <h3>Hiking Routes
         <span class="muted" id="hiking-count"></span>
       </h3>
-      <div class="toggle" data-kind="hiking">
-        <button class="toggle-btn active" data-view="completed">Completed</button>
-        <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      <div class="toggle-wrapper">
+        <div class="toggle" data-kind="hiking">
+          <button class="toggle-btn active" data-view="completed">Completed</button>
+          <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+        </div>
       </div>
       <div class="search">
         <input id="search-hiking" placeholder="Search hiking routes..." />
@@ -344,9 +354,11 @@
       <h3>Motorcycle Routes
         <span class="muted" id="motor-count"></span>
       </h3>
-      <div class="toggle" data-kind="motorcycle">
-        <button class="toggle-btn active" data-view="completed">Completed</button>
-        <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      <div class="toggle-wrapper">
+        <div class="toggle" data-kind="motorcycle">
+          <button class="toggle-btn active" data-view="completed">Completed</button>
+          <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+        </div>
       </div>
       <div class="search">
         <input id="search-motor" placeholder="Search motorcycle routes..." />
@@ -640,58 +652,3 @@
 
     return card;
   }
-
-  // Load GPX and display
-  function loadAndShowGPX(url){
-    clearGPX(); // remove previous
-    clearParkings(); // optionally clear markers
-
-    // show loading state?
-    const gpxLayer = new L.GPX(url, {
-      async: true,
-      polyline_options: { color: varOrDefault('--accent','#e74c3c'), weight: 4, opacity: 0.9 },
-      marker_options: { startIconUrl: null, endIconUrl: null, shadowUrl: null }
-    }).on('loaded', function(e){
-      currentGPX = gpxLayer;
-      map.fitBounds(gpxLayer.getBounds(), {padding:[40,40]});
-    }).on('error', function(e){
-      alert('Failed to load GPX: ' + url);
-      console.error(e);
-    }).addTo(map);
-
-    // store
-    currentGPX = gpxLayer;
-  }
-
-  function varOrDefault(name, def){
-    try{
-      return getComputedStyle(document.documentElement).getPropertyValue(name) || def;
-    }catch(e){ return def; }
-  }
-
-  function addParkingPoint(coordsStr, title){
-    // coordsStr like "47.12, 11.54"
-    if(!coordsStr) return;
-    const parts = coordsStr.split(',').map(s=>parseFloat(s.trim()));
-    if(parts.length<2 || isNaN(parts[0]) || isNaN(parts[1])){
-      alert('Invalid coords: ' + coordsStr);
-      return;
-    }
-    const m = L.marker([parts[0], parts[1]]).addTo(map).bindPopup(`<strong>${escapeHtml(title||'Parking')}</strong><br>${escapeHtml(coordsStr)}`);
-    parkingMarkers.push(m);
-    map.panTo([parts[0], parts[1]]);
-    m.openPopup();
-  }
-
-  function escapeHtml(s){
-    if(!s) return '';
-    return String(s).replace(/[&<>"'`]/g, function(ch){
-      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'" :'&#39;','`':'&#96;'})[ch];
-    });
-  }
-
-  // small helper: add keyboard support or other UI features later
-  </script>
-</body>
-</html>
-
