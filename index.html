@@ -834,6 +834,14 @@
       name.textContent = u.name || 'Route';
       item.appendChild(name);
 
+      // Add custom description/notes section above the action buttons
+      if (u.description || u.notes) {
+        const description = document.createElement('div');
+        description.className = 'route-description text-muted text-sm mt-2 mb-3 px-1';
+        description.textContent = u.description || u.notes;
+        item.appendChild(description);
+      }
+
       const actions = document.createElement('div');
       actions.className = 'actions';
 
