@@ -207,5 +207,239 @@ function setupToggles(){
 // aceleași ca în codul desktop, doar verificăm target container pentru mobile/desktop
 
 </script>
+// --- Config ---
+const DATA_URL = './data/trasee.json'; // completed routes
+const HIKING_UPCOMING_URL = './data/hiking_upcoming.json';
+const MOTO_UPCOMING_URL = './data/moto_upcoming.json';
+const ESRI_SAT = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+const OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+// --- Map init ---
+const map = L.map('map', {
+  center: [50.5, 4.5],
+  zoom: 7,
+  preferCanvas: true
+});
+const baseOSM = L.tileLayer(OSM, { attribution: '© OpenStreetMap contributors' });
+const baseSat = L.tileLayer(ESRI_SAT, { attribution: 'Esri Satellite' });
+baseSat.addTo(map);
+
+let currentGPX = null;
+let parkingMarkers = [];
+let activeShowButton = null;
+let activeParkingButton = null;
+const state = {
+  completed: null,
+  upcoming: { hiking: [], motorcycle: [] },
+  view: { hiking: 'completed', motorcycle: 'completed' }
+};
+
+// --- Tile toggle ---
+let satOn = true;
+const btnTiles = document.getElementById('btn-tiles');
+btnTiles.textContent = 'Map';
+btnTiles.addEventListener('click', () => {
+  if(!satOn){
+    baseSat.addTo(map);
+    baseOSM.remove();
+    btnTiles.textContent = 'Map';
+    satOn = true;
+  } else {
+    baseOSM.addTo(map);
+    baseSat.remove();
+    btnTiles.textContent = 'Satellite';
+    satOn = false;
+  }
+});
+
+// --- Clear GPX / Parking ---
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  clearGPX();
+  clearParkings();
+  if(activeShowButton) resetButton(activeShowButton); activeShowButton=null;
+  if(activeParkingButton) resetButton(activeParkingButton); activeParkingButton=null;
+});
+
+function clearGPX(){ if(currentGPX){ try{map.removeLayer(currentGPX);}catch{} currentGPX=null; } }
+function clearParkings(){ parkingMarkers.forEach(m=>map.removeLayer(m)); parkingMarkers=[]; }
+function resetButton(btn){
+  btn.classList.remove('bg-primary','border-primary','text-white','font-semibold');
+  btn.classList.add('bg-card','border-border','text-text-secondary');
+}
+
+// --- Show / Parking button helpers ---
+function setActiveShowButton(newButton){
+  if(activeShowButton===newButton){ resetButton(newButton); activeShowButton=null; clearGPX(); clearParkings(); return false; }
+  if(activeShowButton) resetButton(activeShowButton);
+  activeShowButton = newButton;
+  newButton.classList.remove('bg-card','border-border','text-text-secondary');
+  newButton.classList.add('bg-primary','border-primary','text-white','font-semibold');
+  return true;
+}
+function setActiveParkingButton(newButton, coordsStr, title){
+  if(activeParkingButton===newButton){ resetButton(newButton); activeParkingButton=null; clearParkings(); return false; }
+  if(activeParkingButton) resetButton(activeParkingButton);
+  clearParkings();
+  if(coordsStr && title) addParkingPoint(coordsStr,title);
+  activeParkingButton=newButton;
+  newButton.classList.remove('bg-card','border-border','text-text-secondary');
+  newButton.classList.add('bg-primary','border-primary','text-white','font-semibold');
+  return true;
+}
+
+// --- Load JSON ---
+Promise.all([
+  fetch(DATA_URL).then(r=>r.ok?r.json():[]),
+  fetch(HIKING_UPCOMING_URL).then(r=>r.ok?r.json():[]),
+  fetch(MOTO_UPCOMING_URL).then(r=>r.ok?r.json():[])
+])
+.then(([completed,hikingUpcoming,motoUpcoming])=>{
+  state.completed=completed||{};
+  state.upcoming.hiking=hikingUpcoming||[];
+  state.upcoming.motorcycle=motoUpcoming||[];
+  setupToggles();
+  setupFilters();
+  renderColumn('hiking');
+  renderColumn('motorcycle');
+})
+.catch(err=>{ console.error(err); document.getElementById('hiking-list').innerText='Failed to load data'; document.getElementById('motor-list').innerText='Failed to load data'; });
+
+// --- Toggle Completed / Upcoming ---
+function setupToggles(){
+  document.querySelectorAll('.toggle').forEach(toggle=>{
+    const kind=toggle.dataset.kind;
+    toggle.querySelectorAll('.toggle-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        toggle.querySelectorAll('.toggle-btn').forEach(b=>{
+          b.classList.remove('bg-primary','text-white','font-semibold');
+          b.classList.add('text-muted','hover:text-text-secondary');
+        });
+        btn.classList.remove('text-muted','hover:text-text-secondary');
+        btn.classList.add('bg-primary','text-white','font-semibold');
+        state.view[kind] = btn.dataset.view;
+        renderColumn(kind);
+      });
+    });
+  });
+}
+
+// --- Search / Filter ---
+function setupFilters(){
+  document.getElementById('search-hiking').addEventListener('input', e=>filterList('hiking', e.target.value));
+  document.getElementById('search-motor').addEventListener('input', e=>filterList('motorcycle', e.target.value));
+  document.getElementById('clear-hiking').addEventListener('click', ()=>{ document.getElementById('search-hiking').value=''; filterList('hiking',''); });
+  document.getElementById('clear-motor').addEventListener('click', ()=>{ document.getElementById('search-motor').value=''; filterList('motorcycle',''); });
+}
+function filterList(kind,q){
+  q=(q||'').toLowerCase().trim();
+  const view=state.view[kind]||'completed';
+  const container=view==='completed'
+    ? (kind==='hiking'?document.getElementById('hiking-list'):document.getElementById('motor-list'))
+    : (kind==='hiking'?document.getElementById('hiking-upcoming-list'):document.getElementById('motor-upcoming-list'));
+  Array.from(container.children).forEach(card=>{
+    const txt=(card.dataset.search||'').toLowerCase();
+    card.style.display=txt.includes(q)?'none':'';
+  });
+}
+
+// --- Render ---
+function renderColumn(kind){
+  const view=state.view[kind]||'completed';
+  const completedList=kind==='hiking'?document.getElementById('hiking-list'):document.getElementById('motor-list');
+  const upcomingList=kind==='hiking'?document.getElementById('hiking-upcoming-list'):document.getElementById('motor-upcoming-list');
+  if(view==='completed'){ completedList.style.display='block'; upcomingList.style.display='none'; renderCompleted(kind,completedList); updateCount(kind,(state.completed?.[kind]||[]).length,'routes'); }
+  else{ completedList.style.display='none'; upcomingList.style.display='flex'; renderUpcoming(kind,upcomingList); updateCount(kind,(state.upcoming[kind]||[]).length,'upcoming'); }
+  filterList(kind,(document.getElementById(kind==='hiking'?'search-hiking':'search-motor').value||''));
+}
+function updateCount(kind,count,label){ const el=kind==='hiking'?document.getElementById('hiking-count'):document.getElementById('motor-count'); if(el) el.textContent=`${count} ${label}`; }
+
+function renderCompleted(kind,container){
+  container.innerHTML='';
+  (state.completed?.[kind]||[]).forEach((t,i)=>{ const card=createRouteCard(t,kind,i); container.appendChild(card); });
+}
+function renderUpcoming(kind,container){
+  container.innerHTML='';
+  const items=state.upcoming[kind]||[];
+  if(!items.length){ const empty=document.createElement('div'); empty.className='text-muted'; empty.textContent='No upcoming routes'; container.appendChild(empty); return; }
+  items.forEach(u=>{
+    const item=document.createElement('div');
+    item.className='border border-border-light rounded-xl p-2 mb-2 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-1';
+    item.dataset.search = u.name||'';
+    const name = document.createElement('div'); name.className='font-semibold text-text flex-1 overflow-hidden text-ellipsis whitespace-nowrap'; name.textContent=u.name||'Route'; item.appendChild(name);
+    if(u.description||u.notes){ const desc=document.createElement('div'); desc.className='text-muted text-xs mt-1 mb-1 px-1'; desc.textContent=u.description||u.notes; item.appendChild(desc); }
+    const actions=document.createElement('div'); actions.className='flex gap-1 justify-center w-full pt-1 border-t border-border-light mt-auto';
+    const showBtn=document.createElement('button'); showBtn.className='px-2 py-1 text-xs font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm'; showBtn.textContent='Show'; showBtn.disabled=!u.gpx; showBtn.title=u.gpx?'Show this GPX on the map':'No GPX available';
+    showBtn.addEventListener('click',()=>{ if(!u.gpx){alert('No GPX available'); return;} if(setActiveShowButton(showBtn)){ loadAndShowGPX(u.gpx); } });
+    actions.appendChild(showBtn);
+    const dlBtn=document.createElement('a'); dlBtn.className='px-2 py-1 text-xs font-semibold rounded-lg bg-primary border border-primary text-white cursor-pointer shadow-sm hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-md transition-all duration-200'; dlBtn.textContent='Download GPX'; dlBtn.setAttribute('download',''); if(u.gpx){ dlBtn.href=u.gpx; dlBtn.title='Download this GPX file'; } else { dlBtn.href='javascript:void(0)'; dlBtn.setAttribute('aria-disabled','true'); dlBtn.className+=' opacity-40 cursor-not-allowed pointer-events-none'; dlBtn.title='No GPX available'; } actions.appendChild(dlBtn);
+    if(kind!=='motorcycle' && u.trailhead && u.trailhead.coords){
+      const btnPark=document.createElement('button'); btnPark.className='px-2 py-1 text-xs font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200'; btnPark.textContent='Parking'; btnPark.title='Show parking point on map';
+      btnPark.addEventListener('click',()=>{ setActiveParkingButton(btnPark,u.trailhead.coords,u.trailhead.name||u.name); });
+      actions.appendChild(btnPark);
+    }
+    item.appendChild(actions);
+    container.appendChild(item);
+  });
+}
+
+// --- Create card for completed ---
+function createRouteCard(traseu,kind,index){
+  const name=traseu.name||(traseu.photo?traseu.photo.split('/').pop().split('.')[0]:'Route');
+  const km=traseu.km?`${traseu.km} km`:'';
+  const difficulty=traseu.difficulty||'';
+  const gpx=traseu.gpx||null;
+  const card=document.createElement('div');
+  card.className='border border-border-light rounded-xl p-2 mb-2 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200';
+  card.dataset.search=`${name} ${km} ${difficulty}`;
+  const meta=document.createElement('div'); meta.className='mb-1'; meta.innerHTML=`<div class="flex flex-col gap-1"><strong class="text-text">${escapeHtml(name)}</strong><div class="text-muted text-xs">${escapeHtml(km)}${difficulty?' • '+escapeHtml(difficulty):''}</div></div>`; card.appendChild(meta);
+  const details=document.createElement('div'); details.className='text-muted text-xs mb-1 px-1'; details.innerHTML=(traseu.trailhead&&traseu.trailhead.name?`Start: ${escapeHtml(traseu.trailhead.name)}<br/>`:'')+(traseu.trailhead&&traseu.trailhead.coords?`Coords: ${escapeHtml(traseu.trailhead.coords)}`:''); if(details.innerHTML) card.appendChild(details);
+  const actions=document.createElement('div'); actions.className='flex gap-1 justify-center w-full pt-1 border-t border-border-light mt-1';
+  const btnShow=document.createElement('button'); btnShow.className='px-2 py-1 text-xs font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm'; btnShow.textContent='Show GPX'; btnShow.disabled=!gpx; btnShow.title=gpx?'Show this GPX on the map':'No GPX available'; btnShow.addEventListener('click',()=>{ if(!gpx){alert('No GPX available'); return;} if(setActiveShowButton(btnShow)){ loadAndShowGPX(gpx); } }); actions.appendChild(btnShow);
+  if(kind!=='motorcycle' && traseu.trailhead && traseu.trailhead.coords){
+    const btnPark=document.createElement('button'); btnPark.className='px-2 py-1 text-xs font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200'; btnPark.textContent='Parking'; btnPark.title='Show parking point on map';
+    btnPark.addEventListener('click',()=>{ setActiveParkingButton(btnPark,traseu.trailhead.coords,traseu.trailhead.name||traseu.name); });
+    actions.appendChild(btnPark);
+  }
+  const dlBtn=document.createElement('a'); dlBtn.className='px-2 py-1 text-xs font-semibold rounded-lg bg-primary border border-primary text-white cursor-pointer shadow-sm hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-md transition-all duration-200'; dlBtn.textContent='Download GPX'; dlBtn.setAttribute('download',''); if(gpx){ dlBtn.href=gpx; dlBtn.title='Download this GPX file'; } else { dlBtn.href='javascript:void(0)'; dlBtn.setAttribute('aria-disabled','true'); dlBtn.className+=' opacity-40 cursor-not-allowed pointer-events-none'; dlBtn.title='No GPX available'; } actions.appendChild(dlBtn);
+  card.appendChild(actions);
+  return card;
+}
+
+// --- Load GPX ---
+function loadAndShowGPX(url){
+  clearGPX(); clearParkings();
+  const gpxLayer = new L.GPX(url, { async:true, polyline_options:{color:'#e74c3c',weight:4,opacity:0.9}, marker_options:{startIconUrl:null,endIconUrl:null,shadowUrl:null} })
+    .on('loaded',e=>{ currentGPX=gpxLayer; map.fitBounds(gpxLayer.getBounds(),{padding:[40,40]}); })
+    .on('error',e=>{ alert('Failed to load GPX: '+url); console.error(e); })
+    .addTo(map);
+  currentGPX=gpxLayer;
+}
+
+// --- Add Parking ---
+function addParkingPoint(coordsStr,title){
+  if(!coordsStr) return;
+  const parts=coordsStr.split(',').map(s=>parseFloat(s.trim()));
+  if(parts.length<2||isNaN(parts[0])||isNaN(parts[1])){ alert('Invalid coords: '+coordsStr); return; }
+  const m=L.marker([parts[0],parts[1]]).addTo(map).bindPopup(`<strong>${escapeHtml(title||'Parking')}</strong><br>${escapeHtml(coordsStr)}`);
+  parkingMarkers.push(m); map.panTo([parts[0],parts[1]]); m.openPopup();
+}
+
+// --- Escape HTML ---
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"'`]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[ch]); }
+
+// --- Mobile toggle Hiking / Moto ---
+const btnHiking=document.getElementById('btn-hiking');
+const btnMoto=document.getElementById('btn-moto');
+const hikingPanel=document.getElementById('hiking-panel');
+const motorPanel=document.getElementById('motor-panel');
+hikingPanel.classList.remove('hidden');
+btnHiking.classList.add('bg-primary'); btnMoto.classList.add('bg-gray-700');
+btnHiking.addEventListener('click',()=>{
+  hikingPanel.classList.remove('hidden'); motorPanel.classList.add('hidden'); btnHiking.classList.add('bg-primary'); btnHiking.classList.remove('bg-gray-700'); btnMoto.classList.remove('bg-primary'); btnMoto.classList.add('bg-gray-700');
+});
+btnMoto.addEventListener('click',()=>{
+  motorPanel.classList.remove('hidden'); hikingPanel.classList.add('hidden'); btnMoto.classList.add('bg-primary'); btnMoto.classList.remove('bg-gray-700'); btnHiking.classList.remove('bg-primary'); btnHiking.classList.add('bg-gray-700');
+});
+</script>
 </body>
 </html>
