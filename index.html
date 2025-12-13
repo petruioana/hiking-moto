@@ -443,7 +443,12 @@
         height: auto;
         min-height: calc(100vh - 140px); /* Ensure content fits in remaining space */
       }
-      .map-wrap { order:1; height:60vh; max-height: 400px; }
+      .map-wrap {
+        order:1;
+        height:60vh;
+        max-height: 400px;
+        margin-top: 20px; /* Additional spacing for map controls */
+      }
       .panel { order:2; min-height:120px; height: auto; }
       .panel.right { order:3 }
       .site-header {
