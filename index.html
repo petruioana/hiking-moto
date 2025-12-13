@@ -11,7 +11,37 @@
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#e74c3c', // red for GPX/active buttons
+            'primary-hover': '#c0392b',
+            bg: '#0a0a0a',
+            card: '#151515',
+            muted: '#888',
+            frame: '#1f1f1f',
+            border: '#333',
+            'border-light': '#2a2a2a',
+            text: '#ffffff',
+            'text-secondary': '#e0e0e0',
+          },
+          boxShadow: {
+            'sm': '0 2px 4px rgba(0,0,0,0.3)',
+            'md': '0 4px 12px rgba(0,0,0,0.4)',
+            'lg': '0 8px 24px rgba(0,0,0,0.5)',
+          },
+          fontFamily: {
+            'inter': ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
     :root{
       --bg:#0a0a0a;
       --card:#151515;
@@ -505,28 +535,27 @@
         height:85px;
       }
     }
-  </style>
 </head>
-<body>
-  <header class="site-header">
-    <div class="hero-content">
-      <div class="hero-photo left">
-        <img src="images/petru_ioana.jpeg" alt="Petru and Ioana" loading="lazy" />
+<body class="h-screen m-0 bg-bg text-text font-inter antialiased overflow-hidden">
+  <header class="fixed inset-x-0 top-0 h-[180px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md z-[800] px-7 py-[18px] box-border backdrop-blur-[10px]">
+    <div class="flex items-center gap-10">
+      <div class="hero-photo left w-[104px] h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex-shrink-0 bg-[#0d0d0d]">
+        <img src="images/petru_ioana.jpeg" alt="Petru and Ioana" loading="lazy" class="w-full h-full object-cover" />
       </div>
-      <div class="title">
-        <h1>GPX Routes — by Petru & Ioana</h1>
-        <h2>Hiking Trails & Motorcycle Rides</h2>
-        <div class="subtitle">Pick a route, explore the map, and download GPX for free.</div>
+      <div class="title text-center leading-tight flex flex-col gap-2">
+        <h1 class="text-[28px] font-bold tracking-[0.2px] text-text m-0">GPX Routes — by Petru & Ioana</h1>
+        <h2 class="text-[28px] font-bold tracking-[0.2px] text-text m-0">Hiking Trails & Motorcycle Rides</h2>
+        <div class="subtitle text-base text-muted font-medium">Pick a route, explore the map, and download GPX for free.</div>
       </div>
-      <div class="hero-photo right">
-        <img src="images/motorcycle.jpeg" alt="Motorcycle" loading="lazy" />
+      <div class="hero-photo right w-[104px] h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex-shrink-0 bg-[#0d0d0d]">
+        <img src="images/motorcycle.jpeg" alt="Motorcycle" loading="lazy" class="w-full h-full object-cover" />
       </div>
     </div>
   </header>
 
-  <div class="layout">
+  <div class="mt-[200px] h-[calc(100vh-200px)] grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border">
     <!-- LEFT: Hiking -->
-    <aside class="panel left" id="hiking-panel">
+    <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="hiking-panel">
       <h3>Hiking Routes
         <span class="muted" id="hiking-count"></span>
       </h3>
@@ -545,19 +574,19 @@
     </aside>
 
     <!-- MAP -->
-    <main class="map-wrap">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:600">Map</div>
-        <div class="map-controls">
-          <button id="btn-tiles" class="small">Satellite</button>
-          <button id="btn-clear" class="small">Clear routes</button>
+    <main class="bg-gradient-to-b from-card to-[#0f0f0f] border border-border-light rounded-xl p-[14px] box-border flex flex-col gap-3 h-full max-h-full shadow-sm hover:border-border hover:shadow-md transition-all duration-200">
+      <div class="flex justify-between items-center">
+        <div class="font-semibold">Map</div>
+        <div class="map-controls flex gap-2 items-center justify-end">
+          <button id="btn-tiles" class="px-4 py-2 text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Satellite</button>
+          <button id="btn-clear" class="px-4 py-2 text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Clear routes</button>
         </div>
       </div>
-      <div id="map"></div>
+      <div id="map" class="flex-1 rounded-xl overflow-hidden border-2 border-border shadow-sm"></div>
     </main>
 
     <!-- RIGHT: Motorcycle -->
-    <aside class="panel right" id="motor-panel">
+    <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="motor-panel">
       <h3>Motorcycle Routes
         <span class="muted" id="motor-count"></span>
       </h3>
