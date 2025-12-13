@@ -42,500 +42,6 @@
       }
     }
   </script>
-    :root{
-      --bg:#0a0a0a;
-      --card:#151515;
-      --muted:#888;
-      --accent:#e74c3c; /* red for GPX */
-      --accent-hover:#c0392b;
-      --frame:#1f1f1f;
-      --border:#333;
-      --border-light:#2a2a2a;
-      --text:#ffffff;
-      --text-secondary:#e0e0e0;
-      --shadow-sm:0 2px 4px rgba(0,0,0,0.3);
-      --shadow-md:0 4px 12px rgba(0,0,0,0.4);
-      --shadow-lg:0 8px 24px rgba(0,0,0,0.5);
-    }
-    .btn, .route-card, .upcoming-item, .panel, .map-wrap, .hero-photo, .toggle button, .search input, .search button, .map-controls .small {
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    html,body{
-      height:100%;
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      overflow:hidden; /* Prevent main page scrolling */
-    }
-    .app {
-      display: grid;
-      grid-template-columns: 360px 1fr 360px;
-      gap: 18px;
-      padding: 18px;
-      box-sizing: border-box;
-      height: 100vh;
-      align-items: start;
-    }
-
-    /* Banner (top, spans all columns) */
-    header.site-header{
-      position:fixed;
-      left:0;right:0;top:0;
-      height:180px;
-      background:linear-gradient(180deg,#000 0%, #0a0a0a 50%, #0f0f0f 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-bottom:1px solid var(--border);
-      box-shadow:var(--shadow-md);
-      z-index:800;
-      padding:18px 28px;
-      box-sizing:border-box;
-      backdrop-filter:blur(10px);
-    }
-    .site-header .hero-content{
-      display:flex;
-      align-items:center;
-      gap:40px;
-    }
-    .site-header .title {
-      text-align:center;
-      line-height:1.2;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .site-header h1,
-    .site-header h2{
-      margin:0;
-      font-size:28px;
-      font-weight:700;
-      letter-spacing:0.2px;
-      color:var(--text);
-    }
-    .site-header .subtitle{font-size:16px;color:var(--muted);font-weight:500}
-    .hero-photo{
-      width:104px;
-      height:104px;
-      border-radius:50%;
-      overflow:hidden;
-      border:3px solid var(--frame);
-      box-shadow:var(--shadow-md), 0 0 0 1px rgba(255,255,255,0.05);
-      background:#0d0d0d;
-      flex-shrink:0;
-    }
-    .hero-photo:hover {
-      transform:scale(1.05);
-      box-shadow:var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.08);
-    }
-    .hero-photo img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    /* container under header */
-    .layout {
-      margin-top: 200px; /* header height + gap */
-      height: calc(100vh - 200px);
-      display: grid;
-      grid-template-columns: 360px 1fr 360px;
-      gap: 18px;
-      padding: 0 18px 18px;
-      box-sizing: border-box;
-    }
-
-    /* Column cards */
-    .panel {
-      background: linear-gradient(180deg,var(--card), #121212);
-      border: 1px solid var(--border-light);
-      border-radius: 12px;
-      padding: 16px;
-      box-sizing: border-box;
-      height: 100%;
-      max-height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow: hidden;
-      box-shadow:var(--shadow-sm);
-    }
-    .panel:hover {
-      border-color:var(--border);
-      box-shadow:var(--shadow-md);
-    }
-
-    .panel h3 {
-      margin:0;
-      font-size:18px;
-      font-weight:600;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      color:var(--text);
-      letter-spacing:-0.2px;
-    }
-    .toggle-wrapper {
-      display:flex;
-      justify-content:center;
-      width:100%;
-      margin-top:8px;
-    }
-    .toggle {
-      display:inline-flex;
-      border:1px solid var(--border);
-      border-radius:999px;
-      overflow:hidden;
-      background:var(--frame);
-      box-shadow:var(--shadow-sm);
-    }
-    .toggle button{
-      border:0;
-      background:transparent;
-      color:var(--muted);
-      padding:8px 16px;
-      cursor:pointer;
-      font-size:13px;
-      font-weight:500;
-      flex:1;
-      min-width:88px;
-      text-align:center;
-    }
-    .toggle button:hover {
-      color:var(--text-secondary);
-    }
-    .toggle button.active{
-      background:var(--accent);
-      color:#fff;
-      font-weight:600;
-      box-shadow:var(--shadow-sm);
-    }
-
-    .search {
-      display:flex;
-      gap:8px;
-      margin-top:8px;
-    }
-    .search input {
-      flex:1;
-      padding:10px 14px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--frame);
-      color:var(--text);
-      outline:none;
-      font-size:13px;
-    }
-    .search input:focus {
-      border-color:var(--accent);
-      background:var(--card);
-      box-shadow:0 0 0 3px rgba(231,76,60,0.1);
-    }
-    .search button {
-      padding:10px 14px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text-secondary);
-      cursor:pointer;
-      font-weight:500;
-    }
-    .search button:hover {
-      background:var(--frame);
-      color:var(--text);
-    }
-
-    .list {
-      overflow:auto;
-      padding-right:6px;
-      display:block;
-      flex:1;
-      min-height:0;
-    }
-
-    .route-card {
-      border:1px solid var(--border-light);
-      padding:14px;
-      border-radius:10px;
-      margin-bottom:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      box-shadow:var(--shadow-sm);
-    }
-    .route-card:hover {
-      border-color:var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      box-shadow:var(--shadow-md);
-      transform:translateY(-2px);
-    }
-    .route-card .meta {
-      margin-bottom:8px;
-    }
-    .route-card .meta .left{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .route-card .actions {
-      display:flex;
-      gap:8px;
-      justify-content:center;
-      width:100%;
-      padding-top:8px;
-      border-top:1px solid var(--border-light);
-      margin-top:8px;
-    }
-    .upcoming-list{
-      overflow:auto;
-      padding-right:6px;
-      display:none;
-      gap:8px;
-      flex-direction:column;
-      flex:1;
-      min-height:0;
-    }
-    .upcoming-item{
-      border:1px solid var(--border-light);
-      border-radius:10px;
-      padding:14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005));
-      gap:12px;
-      box-shadow:var(--shadow-sm);
-    }
-    .upcoming-item:hover {
-      border-color:var(--border);
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      box-shadow:var(--shadow-md);
-      transform:translateY(-1px);
-    }
-    .upcoming-item .name{
-      font-weight:600;
-      color:var(--text);
-      flex:1;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .upcoming-item .actions{
-      display:flex;
-      gap:8px;
-      justify-content:center;
-      width:100%;
-      padding-top:8px;
-      border-top:1px solid var(--border-light);
-      margin-top:8px;
-    }
-    .btn {
-      padding:8px 14px;
-      font-size:13px;
-      font-weight:500;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:var(--card);
-      color:var(--text-secondary);
-      cursor:pointer;
-      text-decoration:none;
-      text-align:center;
-      display:inline-block;
-      min-width:110px;
-      box-sizing:border-box;
-      box-shadow:var(--shadow-sm);
-    }
-
-    /* Smaller buttons for hiking column */
-    #hiking-panel .btn {
-      padding:6px 10px;
-      font-size:12px;
-      min-width:90px;
-      border-radius:6px;
-    }
-    .btn:hover:not(:disabled) {
-      background:var(--frame);
-      border-color:var(--border);
-      color:var(--text);
-      transform:translateY(-1px);
-      box-shadow:var(--shadow-md);
-    }
-    .btn:active:not(:disabled) {
-      transform:translateY(0);
-    }
-    .btn:disabled {
-      opacity:0.4;
-      cursor:not-allowed;
-    }
-    .upcoming-item .actions .btn {
-      width:100%;
-    }
-    .btn.primary{
-      background:var(--accent);
-      border-color:var(--accent);
-      color:#fff;
-      font-weight:600;
-    }
-    .btn.primary:hover:not(:disabled) {
-      background:var(--accent-hover);
-      border-color:var(--accent-hover);
-      transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(231,76,60,0.3);
-    }
-    .btn.show-active{
-      background:var(--accent);
-      border-color:var(--accent);
-      color:#fff;
-      font-weight:600;
-    }
-    .btn.show-active:hover:not(:disabled) {
-      background:var(--accent-hover);
-      border-color:var(--accent-hover);
-      transform:translateY(-1px);
-      box-shadow:0 4px 12px rgba(231,76,60,0.3);
-    }
-    .muted { color:var(--muted); font-size:13px }
-
-    /* Map container with frame */
-    .map-wrap {
-      background:linear-gradient(180deg,var(--card), #0f0f0f);
-      border:1px solid var(--border-light);
-      border-radius:12px;
-      padding:14px;
-      box-sizing:border-box;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      height: 100%;
-      max-height: 100%;
-      box-shadow:var(--shadow-sm);
-    }
-    .map-wrap:hover {
-      border-color:var(--border);
-      box-shadow:var(--shadow-md);
-    }
-    #map { flex:1; border-radius:10px; overflow:hidden; border:2px solid var(--border); box-shadow:var(--shadow-sm); }
-
-    .map-controls {
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:flex-end;
-    }
-    .map-controls .small {
-      padding:8px 14px;
-      font-size:13px;
-      font-weight:500;
-      border-radius:8px;
-      background:var(--card);
-      border:1px solid var(--border);
-      cursor:pointer;
-      color:var(--text-secondary);
-      box-shadow:var(--shadow-sm);
-    }
-    .map-controls .small:hover {
-      background:var(--frame);
-      color:var(--text);
-      transform:translateY(-1px);
-      box-shadow:var(--shadow-md);
-    }
-
-    /* Custom scrollbar styling - black background */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #000000;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #555;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #777;
-    }
-    ::-webkit-scrollbar-button {
-      background: #333;
-      border-radius: 2px;
-    }
-    ::-webkit-scrollbar-button:hover {
-      background: #555;
-    }
-
-    /* responsive */
-    @media (max-width: 1000px) {
-      html, body {
-        overflow: auto; /* Enable scrolling on mobile */
-      }
-      .app {
-        grid-template-columns: 1fr;
-        padding:10px;
-        height: auto;
-        min-height: 100vh;
-      }
-      .layout {
-        grid-template-columns: 1fr;
-        padding:10px;
-        margin-top: 140px; /* ~25% more spacing for complete clearance */
-        height: auto;
-        min-height: calc(100vh - 140px); /* Ensure content fits in remaining space */
-      }
-      .map-wrap {
-        order:1;
-        height:78vh; /* ~30% taller than original 60vh for better balance */
-        max-height: 550px; /* Increased max-height accordingly */
-        margin-top: 20px; /* Additional spacing for map controls */
-      }
-      .panel { order:2; min-height:120px; height: auto; }
-      .panel.right { order:3 }
-      .site-header {
-        position: fixed; /* Fixed at top on mobile */
-        left: 0;
-        right: 0;
-        top: 0;
-        height: auto;
-        padding: 24px 14px 28px; /* Increased padding for taller banner */
-        min-height: auto;
-        border-bottom: 3px solid var(--accent); /* Prominent separating line */
-        background: linear-gradient(180deg, var(--bg) 0%, rgba(15,15,15,0.98) 100%);
-        backdrop-filter: blur(10px);
-        z-index: 100; /* High z-index for fixed positioning */
-      }
-      .site-header .hero-content{
-        justify-content: center;
-        gap:24px; /* Smaller gap for mobile */
-      }
-      .site-header .title {
-        text-align: center;
-        line-height: 1.2;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .site-header h1,
-      .site-header h2 {
-        margin: 0;
-        font-size: 24px; /* Slightly smaller than desktop */
-        font-weight: 700;
-        letter-spacing: 0.2px;
-        color: var(--text);
-      }
-      .site-header .subtitle {
-        font-size: 14px;
-        color: var(--muted);
-        font-weight: 500;
-      }
-      .hero-photo{
-        width:85px; /* Slightly larger for better text alignment */
-        height:85px;
-      }
-    }
-</head>
 <body class="h-screen m-0 bg-bg text-text font-inter antialiased overflow-hidden">
   <header class="fixed inset-x-0 top-0 h-[180px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md z-[800] px-7 py-[18px] box-border backdrop-blur-[10px]">
     <div class="flex items-center gap-10">
@@ -556,21 +62,21 @@
   <div class="mt-[200px] h-[calc(100vh-200px)] grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border">
     <!-- LEFT: Hiking -->
     <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="hiking-panel">
-      <h3>Hiking Routes
-        <span class="muted" id="hiking-count"></span>
+      <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
+        <span class="text-muted" id="hiking-count"></span>
       </h3>
-      <div class="toggle-wrapper">
-        <div class="toggle" data-kind="hiking">
-          <button class="toggle-btn active" data-view="completed">Completed</button>
-          <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      <div class="flex justify-center w-full mt-2">
+        <div class="inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="hiking">
+          <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
+          <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
         </div>
       </div>
-      <div class="search">
-        <input id="search-hiking" placeholder="Search hiking routes..." />
-        <button class="btn" id="clear-hiking">Clear</button>
+      <div class="flex gap-2 mt-2">
+        <input id="search-hiking" placeholder="Search hiking routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
+        <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-hiking">Clear</button>
       </div>
-      <div class="list" id="hiking-list" aria-live="polite"></div>
-      <div class="upcoming-list" id="hiking-upcoming-list" aria-live="polite"></div>
+      <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0" id="hiking-list" aria-live="polite"></div>
+      <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0" id="hiking-upcoming-list" aria-live="polite"></div>
     </aside>
 
     <!-- MAP -->
@@ -587,21 +93,21 @@
 
     <!-- RIGHT: Motorcycle -->
     <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="motor-panel">
-      <h3>Motorcycle Routes
-        <span class="muted" id="motor-count"></span>
+      <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Motorcycle Routes
+        <span class="text-muted" id="motor-count"></span>
       </h3>
-      <div class="toggle-wrapper">
-        <div class="toggle" data-kind="motorcycle">
-          <button class="toggle-btn active" data-view="completed">Completed</button>
-          <button class="toggle-btn" data-view="upcoming">Upcoming</button>
+      <div class="flex justify-center w-full mt-2">
+        <div class="inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="motorcycle">
+          <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
+          <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
         </div>
       </div>
-      <div class="search">
-        <input id="search-motor" placeholder="Search motorcycle routes..." />
-        <button class="btn" id="clear-motor">Clear</button>
+      <div class="flex gap-2 mt-2">
+        <input id="search-motor" placeholder="Search motorcycle routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
+        <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-motor">Clear</button>
       </div>
-      <div class="list" id="motor-list" aria-live="polite"></div>
-      <div class="upcoming-list" id="motor-upcoming-list" aria-live="polite"></div>
+      <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0" id="motor-list" aria-live="polite"></div>
+      <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0" id="motor-upcoming-list" aria-live="polite"></div>
     </aside>
   </div>
 
@@ -664,12 +170,14 @@
     clearParkings();
     // Deactivate any active Show button
     if (activeShowButton) {
-      activeShowButton.classList.remove('show-active');
+      activeShowButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeShowButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
       activeShowButton = null;
     }
     // Deactivate any active Parking button
     if (activeParkingButton) {
-      activeParkingButton.classList.remove('show-active');
+      activeParkingButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeParkingButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
       activeParkingButton = null;
     }
   });
@@ -689,7 +197,8 @@
   function setActiveShowButton(newButton) {
     // If clicking the same button that's active, deactivate it
     if (activeShowButton === newButton) {
-      activeShowButton.classList.remove('show-active');
+      activeShowButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeShowButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
       activeShowButton = null;
       clearGPX();
       clearParkings();
@@ -698,13 +207,15 @@
 
     // Deactivate previous button if any
     if (activeShowButton) {
-      activeShowButton.classList.remove('show-active');
+      activeShowButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeShowButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
     }
 
     // Activate new button
     activeShowButton = newButton;
     if (newButton) {
-      newButton.classList.add('show-active');
+      newButton.classList.remove('bg-card', 'border-border', 'text-text-secondary');
+      newButton.classList.add('bg-primary', 'border-primary', 'text-white', 'font-semibold');
     }
 
     return true; // Indicate button was activated
@@ -714,7 +225,8 @@
   function setActiveParkingButton(newButton, coordsStr, title) {
     // If clicking the same button that's active, deactivate it
     if (activeParkingButton === newButton) {
-      activeParkingButton.classList.remove('show-active');
+      activeParkingButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeParkingButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
       activeParkingButton = null;
       clearParkings();
       return false; // Indicate button was deactivated
@@ -722,7 +234,8 @@
 
     // Deactivate previous button if any
     if (activeParkingButton) {
-      activeParkingButton.classList.remove('show-active');
+      activeParkingButton.classList.remove('bg-primary', 'border-primary', 'text-white', 'font-semibold');
+      activeParkingButton.classList.add('bg-card', 'border-border', 'text-text-secondary');
     }
 
     // Clear existing parking markers and add new one
@@ -734,7 +247,8 @@
     // Activate new button
     activeParkingButton = newButton;
     if (newButton) {
-      newButton.classList.add('show-active');
+      newButton.classList.remove('bg-card', 'border-border', 'text-text-secondary');
+      newButton.classList.add('bg-primary', 'border-primary', 'text-white', 'font-semibold');
     }
 
     return true; // Indicate button was activated
@@ -766,8 +280,12 @@
       const kind = toggle.dataset.kind;
       toggle.querySelectorAll('.toggle-btn').forEach(btn=>{
         btn.addEventListener('click', ()=>{
-          toggle.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
-          btn.classList.add('active');
+          toggle.querySelectorAll('.toggle-btn').forEach(b=>{
+            b.classList.remove('bg-primary', 'text-white', 'font-semibold');
+            b.classList.add('text-muted', 'hover:text-text-secondary');
+          });
+          btn.classList.remove('text-muted', 'hover:text-text-secondary');
+          btn.classList.add('bg-primary', 'text-white', 'font-semibold');
           state.view[kind] = btn.dataset.view;
           renderColumn(kind);
         });
@@ -826,11 +344,11 @@
     }
     items.forEach((u, idx)=>{
       const item = document.createElement('div');
-      item.className = 'upcoming-item';
+      item.className = 'border border-border-light rounded-xl p-4 mb-3 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3';
       item.dataset.search = u.name || '';
 
       const name = document.createElement('div');
-      name.className = 'name';
+      name.className = 'font-semibold text-text flex-1 overflow-hidden text-ellipsis whitespace-nowrap';
       name.textContent = u.name || 'Route';
       item.appendChild(name);
 
@@ -843,10 +361,10 @@
       }
 
       const actions = document.createElement('div');
-      actions.className = 'actions';
+      actions.className = 'flex gap-2 justify-center w-full pt-2 border-t border-border-light mt-auto';
 
       const showBtn = document.createElement('button');
-      showBtn.className = 'btn';
+      showBtn.className = 'px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm';
       showBtn.textContent = 'Show';
       showBtn.disabled = !u.gpx;
       showBtn.title = u.gpx ? 'Show this GPX on the map' : 'No GPX available';
@@ -859,7 +377,7 @@
       actions.appendChild(showBtn);
 
       const dlBtn = document.createElement('a');
-      dlBtn.className = 'btn primary';
+      dlBtn.className = 'px-4 py-2 text-sm font-semibold rounded-lg bg-primary border border-primary text-white cursor-pointer shadow-sm hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-md transition-all duration-200';
       dlBtn.textContent = 'Download GPX';
       dlBtn.setAttribute('download','');
       if(u.gpx){
@@ -867,8 +385,7 @@
       }else{
         dlBtn.href = 'javascript:void(0)';
         dlBtn.setAttribute('aria-disabled','true');
-        dlBtn.style.opacity = '0.5';
-        dlBtn.style.pointerEvents = 'none';
+        dlBtn.className += ' opacity-40 cursor-not-allowed pointer-events-none';
       }
       actions.appendChild(dlBtn);
 
@@ -898,32 +415,31 @@
     const gpx = traseu.gpx || null;
 
     const card = document.createElement('div');
-    card.className = 'route-card';
+    card.className = 'border border-border-light rounded-xl p-4 mb-3 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-1 transition-all duration-200';
     card.dataset.search = `${name} ${km} ${difficulty}`;
 
     // route name and info at top
     const meta = document.createElement('div');
-    meta.className = 'meta';
-    meta.innerHTML = `<div class="left"><strong>${escapeHtml(name)}</strong>
-      <div class="muted">${escapeHtml(km)} ${difficulty ? ' • ' + escapeHtml(difficulty) : ''}</div>
+    meta.className = 'mb-2';
+    meta.innerHTML = `<div class="flex flex-col gap-1"><strong class="text-text">${escapeHtml(name)}</strong>
+      <div class="text-muted text-sm">${escapeHtml(km)} ${difficulty ? ' • ' + escapeHtml(difficulty) : ''}</div>
     </div>`;
     card.appendChild(meta);
 
     // coordinates/details in middle
     const details = document.createElement('div');
-    details.className = 'details muted';
-    details.style.fontSize = '13px';
+    details.className = 'text-muted text-sm mb-2 px-1';
     details.innerHTML = (traseu.trailhead && traseu.trailhead.name ? `Start: ${escapeHtml(traseu.trailhead.name)}<br/>` : '') +
                         (traseu.trailhead && traseu.trailhead.coords ? `Coords: ${escapeHtml(traseu.trailhead.coords)}` : '');
     if(details.innerHTML) card.appendChild(details);
 
     // buttons at bottom
     const actions = document.createElement('div');
-    actions.className = 'actions';
+    actions.className = 'flex gap-2 justify-center w-full pt-2 border-t border-border-light mt-2';
 
     // show button
     const btnShow = document.createElement('button');
-    btnShow.className = 'btn';
+    btnShow.className = 'px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm';
     btnShow.textContent = 'Show GPX';
     btnShow.disabled = !gpx;
     btnShow.title = gpx ? 'Show this GPX on the map' : 'No GPX available';
@@ -937,7 +453,7 @@
 
     if(kind !== 'motorcycle'){
       const btnPark = document.createElement('button');
-      btnPark.className = 'btn';
+      btnPark.className = 'px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm';
       btnPark.textContent = 'Parking';
       btnPark.title = 'Show parking point on map';
       if(traseu.trailhead && traseu.trailhead.coords){
@@ -952,7 +468,7 @@
 
     // download button
     const downloadBtn = document.createElement('a');
-    downloadBtn.className = 'btn primary';
+    downloadBtn.className = 'px-4 py-2 text-sm font-semibold rounded-lg bg-primary border border-primary text-white cursor-pointer shadow-sm hover:bg-primary-hover hover:border-primary-hover hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm';
     downloadBtn.textContent = 'Download GPX';
     downloadBtn.setAttribute('download', '');
     if(gpx){
@@ -961,8 +477,7 @@
     } else {
       downloadBtn.href = 'javascript:void(0)';
       downloadBtn.setAttribute('aria-disabled','true');
-      downloadBtn.style.opacity = '0.5';
-      downloadBtn.style.pointerEvents = 'none';
+      downloadBtn.className += ' opacity-40 cursor-not-allowed pointer-events-none';
       downloadBtn.title = 'No GPX available';
     }
     actions.appendChild(downloadBtn);
