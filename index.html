@@ -66,79 +66,98 @@
     ::-webkit-scrollbar-button:hover {
       background: #555; /* Slightly lighter grey arrows on hover */
     }
+    /* Custom scrollbar - hide on mobile for panels, show on desktop */
+    .custom-scrollbar::-webkit-scrollbar { width: 0; height: 0; background: transparent; }
+    @media (min-width: 768px) {
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        background: #000000;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 4px;
+      }
+    }
+    /* Fallback scroll for non-webkit */
+    .hide-scrollbar {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
   </style>
-
-<body class="h-screen m-0 bg-bg text-text font-inter antialiased overflow-y-auto md:overflow-hidden">
-  <header class="fixed inset-x-0 top-0 h-[200px] md:h-[200px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md z-[800] px-7 md:px-7 py-[18px] box-border backdrop-blur-[10px]">
-    <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10">
-      <div class="hero-photo left w-[85px] h-[85px] md:w-[104px] md:h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex-shrink-0 bg-[#0d0d0d]">
+</head>
+<body class="bg-bg text-text font-inter antialiased h-screen m-0 overflow-y-auto md:overflow-hidden">
+  <!-- Banner/Header - always at top -->
+  <header class="fixed z-[800] inset-x-0 top-0 h-[200px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md px-4 py-4 box-border backdrop-blur-[10px]">
+    <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 w-full max-w-4xl mx-auto">
+      <div class="hero-photo left w-[72px] h-[72px] md:w-[104px] md:h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md bg-[#0d0d0d]">
         <img src="images/petru_ioana.jpeg" alt="Petru and Ioana" loading="lazy" class="w-full h-full object-cover" />
       </div>
-      <div class="title text-center leading-tight flex flex-col gap-2">
-        <h1 class="text-[24px] md:text-[28px] font-bold tracking-[0.2px] text-text m-0">GPX Routes — by Petru & Ioana</h1>
-        <h2 class="text-[24px] md:text-[28px] font-bold tracking-[0.2px] text-text m-0">Hiking Trails & Motorcycle Rides</h2>
-        <div class="subtitle text-sm md:text-base text-muted font-medium">Pick a route, explore the map, and download GPX for free.</div>
+      <div class="title text-center leading-tight flex flex-col gap-2 flex-1">
+        <h1 class="text-[22px] md:text-[28px] font-bold tracking-[0.2px] text-text m-0">GPX Routes — by Petru & Ioana</h1>
+        <h2 class="text-[18px] md:text-[24px] font-bold tracking-[0.2px] text-text m-0">Hiking Trails & Motorcycle Rides</h2>
+        <div class="subtitle text-xs md:text-base text-muted font-medium">Pick a route, explore the map, and download GPX for free.</div>
       </div>
-      <div class="hero-photo right w-[85px] h-[85px] md:w-[104px] md:h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex-shrink-0 bg-[#0d0d0d]">
+      <div class="hero-photo right w-[72px] h-[72px] md:w-[104px] md:h-[104px] rounded-full overflow-hidden border-4 border-frame shadow-md bg-[#0d0d0d]">
         <img src="images/motorcycle.jpeg" alt="Motorcycle" loading="lazy" class="w-full h-full object-cover" />
       </div>
     </div>
   </header>
+  <div class="pt-[200px] w-full h-full">
+    <!-- Layout TWO MODES: flex-col on mobile, grid on desktop -->
+    <div class="flex flex-col gap-4 md:grid md:grid-cols-[320px_1fr_320px] lg:grid-cols-[360px_1fr_360px] md:gap-[18px] px-[8px] md:px-[18px] pb-[18px] box-border md:h-[calc(100vh-200px)] md:min-h-[calc(100vh-200px)] md:mt-0 max-w-6xl mx-auto w-full">
 
-  <div class="mt-[200px] min-h-[calc(100vh-200px)] grid grid-cols-1 gap-[18px] px-[18px] pb-[18px] box-border md:h-[calc(100vh-200px)] md:grid-cols-[360px_1fr_360px]">
-    <!-- LEFT: Hiking -->
-    <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-1 md:row-start-1" id="hiking-panel">
-      <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
-        <span class="text-muted" id="hiking-count"></span>
-      </h3>
-      <div class="flex justify-center w-full mt-2">
-        <div class="inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="hiking">
-          <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
-          <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
+      <!-- MAP SECTION -->
+      <main class="order-1 md:order-2 bg-gradient-to-b from-card to-[#0f0f0f] border border-border-light rounded-xl p-2 md:p-[14px] flex flex-col gap-3 shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-2 h-auto md:h-full max-h-[400px] md:max-h-full">
+        <div class="flex justify-between items-center mb-2">
+          <div class="font-semibold">Map</div>
+          <div class="map-controls flex gap-2 items-center justify-end">
+            <button id="btn-tiles" class="px-3 py-2 text-xs md:text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Satellite</button>
+            <button id="btn-clear" class="px-3 py-2 text-xs md:text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Clear routes</button>
+          </div>
         </div>
-      </div>
-      <div class="flex gap-2 mt-2">
-        <input id="search-hiking" placeholder="Search hiking routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
-        <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-hiking">Clear</button>
-      </div>
-      <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0" id="hiking-list" aria-live="polite"></div>
-      <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0" id="hiking-upcoming-list" aria-live="polite"></div>
-    </aside>
+        <div class="w-full aspect-[16/9] md:aspect-auto md:flex-1 rounded-xl overflow-hidden border-2 border-border shadow-sm" style="min-height:140px;" id="map"></div>
+      </main>
 
-      <!-- RIGHT: Motorcycle (Desktop) -->
-      <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="motor-panel">
-      <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Motorcycle Routes
-        <span class="text-muted" id="motor-count"></span>
-      </h3>
-      <div class="flex justify-center w-full mt-2">
-        <div class="inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="motorcycle">
-          <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
-          <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
+      <!-- HIKING COLUMN (panel on mobile) -->
+      <aside class="order-2 md:order-1 bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-1 h-auto md:h-full custom-scrollbar hide-scrollbar">
+        <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
+          <span class="text-muted" id="hiking-count"></span>
+        </h3>
+        <div class="flex justify-center w-full mt-2">
+          <div class="toggle inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="hiking">
+            <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
+            <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
+          </div>
         </div>
-      </div>
-      <div class="flex gap-2 mt-2">
-        <input id="search-motor" placeholder="Search motorcycle routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
-        <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-motor">Clear</button>
-      </div>
-      <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0" id="motor-list" aria-live="polite"></div>
-      <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0" id="motor-upcoming-list" aria-live="polite"></div>
-    </aside>
-
-    <!-- MAP -->
-    <main class="bg-gradient-to-b from-card to-[#0f0f0f] border border-border-light rounded-xl p-[14px] box-border flex flex-col gap-3 h-[60vh] md:h-full max-h-full shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-2 md:row-start-1">
-      <div class="flex justify-between items-center">
-        <div class="font-semibold">Map</div>
-        <div class="map-controls flex gap-2 items-center justify-end">
-          <button id="btn-tiles" class="px-4 py-2 text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Satellite</button>
-          <button id="btn-clear" class="px-4 py-2 text-sm font-medium rounded-lg bg-card border border-border cursor-pointer text-text-secondary hover:bg-frame hover:text-text transition-all duration-200 shadow-sm hover:shadow-md">Clear routes</button>
+        <div class="flex gap-2 mt-2">
+          <input id="search-hiking" placeholder="Search hiking routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
+          <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-hiking">Clear</button>
         </div>
-      </div>
-      <div id="map" class="flex-1 rounded-xl overflow-hidden border-2 border-border shadow-sm"></div>
-    </main>
+        <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0 custom-scrollbar hide-scrollbar" id="hiking-list" aria-live="polite"></div>
+        <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0 custom-scrollbar hide-scrollbar" id="hiking-upcoming-list" aria-live="polite"></div>
+      </aside>
 
-    <!-- RIGHT: Motorcycle -->
-    <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-3 md:row-start-1" id="motor-panel">
-
+      <!-- MOTORCYCLE COLUMN (panel on mobile) -->
+      <aside class="order-3 md:order-3 bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200 md:col-start-3 h-auto md:h-full custom-scrollbar hide-scrollbar">
+        <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Motorcycle Routes
+          <span class="text-muted" id="motor-count"></span>
+        </h3>
+        <div class="flex justify-center w-full mt-2">
+          <div class="toggle inline-flex border border-border rounded-2xl overflow-hidden bg-frame shadow-sm" data-kind="motorcycle">
+            <button class="toggle-btn px-4 py-2 text-sm font-semibold cursor-pointer bg-primary text-white transition-colors duration-200" data-view="completed">Completed</button>
+            <button class="toggle-btn px-4 py-2 text-sm font-medium cursor-pointer text-muted hover:text-text-secondary transition-colors duration-200" data-view="upcoming">Upcoming</button>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <input id="search-motor" placeholder="Search motorcycle routes..." class="flex-1 px-3 py-2 text-sm border border-border rounded-lg bg-frame text-text outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary/10" />
+          <button class="btn px-3 py-2 text-sm font-medium rounded-lg border border-border bg-card text-text-secondary cursor-pointer shadow-sm hover:bg-frame hover:text-text hover:-translate-y-0.5 hover:shadow-md transition-all duration-200" id="clear-motor">Clear</button>
+        </div>
+        <div class="overflow-auto pr-1 flex flex-col flex-1 min-h-0 custom-scrollbar hide-scrollbar" id="motor-list" aria-live="polite"></div>
+        <div class="upcoming-list overflow-auto pr-1 hidden flex-col gap-2 flex-1 min-h-0 custom-scrollbar hide-scrollbar" id="motor-upcoming-list" aria-live="polite"></div>
+      </aside>
+    </div>
+  </div>
   <!-- Leaflet JS -->
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Leaflet GPX plugin -->
