@@ -8,14 +8,14 @@
       "trailhead": { "name": "Westhouter", "coords": "50.799148, 2.746559" }
     },
     {
-      "name": "Rochehaut",
+      "name": "Kemmel",
       "km": 18.56,
       "difficulty": "Medium",
       "gpx": "hiking/heuvelland.gpx",
       "trailhead": { "name": "Kemmel", "coords": "50.782102, 2.827117" }
     },
     {
-      "name": "Heuvelland",
+      "name": "Rochehaut",
       "km": 15.14,
       "difficulty": "Medium-Hard",
       "gpx": "hiking/buillon.gpx",
