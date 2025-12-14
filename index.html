@@ -105,6 +105,13 @@
   <div class="mt-[200px] h-[calc(100vh-200px)] grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border">
     <!-- LEFT: Hiking -->
     <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="hiking-panel-desktop">
+      <!-- Weather Widget (always visible) -->
+      <div id="weather-widget-desktop" class="bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-700/40 rounded-lg p-3 mb-2 backdrop-blur-sm">
+        <h4 class="text-sm font-semibold text-blue-300 mb-2">Weather</h4>
+        <div id="weather-content-desktop" class="text-xs space-y-2">
+          <div class="text-muted">Select a route to see weather</div>
+        </div>
+      </div>
       <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
         <span class="text-muted" id="hiking-count"></span>
       </h3>
@@ -323,6 +330,8 @@
         activeParkingButtonDesktop.classList.add('bg-card', 'border-border', 'text-text-secondary');
         activeParkingButtonDesktop = null;
       }
+      // Reset weather widget
+      document.getElementById('weather-content-desktop').innerHTML = '<div class="text-muted">Select a route to see weather</div>';
     });
 
     // Mobile clear
@@ -729,6 +738,10 @@
     }).on('loaded', function(e) {
       if (layout === 'desktop') {
         currentGPXDesktop = gpxLayer;
+        // Fetch weather for this GPX location (use center of bounds)
+        const bounds = gpxLayer.getBounds();
+        const center = bounds.getCenter();
+        fetchAndShowWeather(center.lat, center.lng);
       } else {
         currentGPXMobile = gpxLayer;
       }
@@ -737,6 +750,81 @@
       alert('Failed to load GPX: ' + url);
       console.error(e);
     }).addTo(map);
+  }
+
+  function fetchAndShowWeather(lat, lng) {
+    const weatherWidget = document.getElementById('weather-widget-desktop');
+    const weatherContent = document.getElementById('weather-content-desktop');
+    
+    weatherWidget.classList.remove('hidden');
+    weatherContent.innerHTML = '<div class="text-muted">Loading weather...</div>';
+    
+    // Use Open-Meteo API (free, no key required)
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&temperature_unit=celsius&timezone=auto`;
+    
+    fetch(url)
+      .then(r => {
+        if (!r.ok) throw new Error('Weather fetch failed');
+        return r.json();
+      })
+      .then(data => {
+        const current = data.current;
+        const weather = getWeatherDescription(current.weather_code);
+        
+        let html = `
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <div class="text-lg font-bold text-blue-100">${Math.round(current.temperature_2m)}°C</div>
+                <div class="text-xs text-blue-300">${weather}</div>
+              </div>
+              <div class="text-right text-xs text-muted">
+                <div>💨 ${Math.round(current.wind_speed_10m)} km/h</div>
+                <div>💧 ${current.relative_humidity_2m}%</div>
+              </div>
+            </div>
+            <div class="text-xs text-muted pt-1 border-t border-blue-700/30">
+              <div>Lat: ${lat.toFixed(2)}, Lng: ${lng.toFixed(2)}</div>
+            </div>
+          </div>
+        `;
+        weatherContent.innerHTML = html;
+      })
+      .catch(err => {
+        console.error('Weather fetch error:', err);
+        weatherContent.innerHTML = '<div class="text-muted text-xs">Could not load weather</div>';
+      });
+  }
+
+  function getWeatherDescription(code) {
+    // WMO Weather interpretation codes
+    const descriptions = {
+      0: '☀️ Clear',
+      1: '🌤️ Mostly Clear',
+      2: '⛅ Partly Cloudy',
+      3: '☁️ Overcast',
+      45: '🌫️ Foggy',
+      48: '🌫️ Frost Fog',
+      51: '🌧️ Light Drizzle',
+      53: '🌧️ Drizzle',
+      55: '🌧️ Heavy Drizzle',
+      61: '🌧️ Light Rain',
+      63: '🌧️ Rain',
+      65: '🌧️ Heavy Rain',
+      71: '❄️ Light Snow',
+      73: '❄️ Snow',
+      75: '❄️ Heavy Snow',
+      77: '❄️ Snow Grains',
+      80: '🌧️ Light Showers',
+      81: '🌧️ Showers',
+      82: '🌧️ Heavy Showers',
+      85: '❄️ Light Snow Showers',
+      86: '❄️ Snow Showers',
+      95: '⛈️ Thunderstorm',
+      96: '⛈️ Thunderstorm w/ Hail',
+      99: '⛈️ Thunderstorm w/ Hail'
+    };
+    return descriptions[code] || 'Unknown';
   }
 
   function addParkingPoint(layout, coordsStr, title) {
