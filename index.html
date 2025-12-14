@@ -517,10 +517,10 @@
 
   function setupFilters() {
     // Desktop
-    document.getElementById('search-hiking-mobile').addEventListener('input', (e) => filterList('hiking', 'mobile', e.target.value));
-    document.getElementById('search-motor-mobile').addEventListener('input', (e) => filterList('motorcycle', 'mobile', e.target.value));
-    document.getElementById('clear-hiking-mobile').addEventListener('click', () => { document.getElementById('search-hiking-mobile').value = ''; filterList('hiking', 'mobile', ''); });
-    document.getElementById('clear-motor-mobile').addEventListener('click', () => { document.getElementById('search-motor-mobile').value = ''; filterList('motorcycle', 'mobile', ''); });
+    document.getElementById('search-hiking').addEventListener('input', (e) => filterList('hiking', 'desktop', e.target.value));
+    document.getElementById('search-motor').addEventListener('input', (e) => filterList('motorcycle', 'desktop', e.target.value));
+    document.getElementById('clear-hiking').addEventListener('click', () => { document.getElementById('search-hiking').value = ''; filterList('hiking', 'desktop', ''); });
+    document.getElementById('clear-motor').addEventListener('click', () => { document.getElementById('search-motor').value = ''; filterList('motorcycle', 'desktop', ''); });
     
     // Mobile
     document.getElementById('search-hiking-mobile').addEventListener('input', (e) => filterList('hiking', 'mobile', e.target.value));
@@ -546,7 +546,12 @@
       renderUpcoming(kind, layout, upcomingList);
       updateCount(kind, layout, (state.upcoming[kind] || []).length, 'upcoming');
     }
-    filterList(kind, layout, (document.getElementById(kind === 'hiking' ? 'search-hiking' + listSuffix : 'search-motor' + listSuffix).value || ''));
+    // Get search input ID based on layout (desktop doesn't have suffix, mobile does)
+    const searchInputId = kind === 'hiking' 
+      ? (layout === 'desktop' ? 'search-hiking' : 'search-hiking-mobile')
+      : (layout === 'desktop' ? 'search-motor' : 'search-motor-mobile');
+    const searchInput = document.getElementById(searchInputId);
+    filterList(kind, layout, (searchInput ? searchInput.value : ''));
   }
 
   function updateCount(kind, layout, count, label) {
