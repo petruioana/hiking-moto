@@ -514,11 +514,25 @@
       toggle.querySelectorAll('.toggle-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           toggle.querySelectorAll('.toggle-btn').forEach(b => {
-            b.classList.remove('bg-primary', 'text-white', 'font-semibold');
-            b.classList.add('text-muted', 'hover:text-text-secondary');
+            const view = b.dataset.view;
+            if (view === 'upcoming') {
+              b.classList.remove('bg-blue', 'text-white', 'font-semibold');
+              b.classList.add('bg-blue/20', 'text-white');
+            } else {
+              b.classList.remove('bg-primary', 'text-white', 'font-semibold');
+              b.classList.add('text-muted', 'hover:text-text-secondary');
+            }
           });
-          btn.classList.remove('text-muted', 'hover:text-text-secondary');
-          btn.classList.add('bg-primary', 'text-white', 'font-semibold');
+          
+          const view = btn.dataset.view;
+          if (view === 'upcoming') {
+            btn.classList.remove('bg-blue/20', 'text-white');
+            btn.classList.add('bg-blue', 'text-white', 'font-semibold');
+          } else {
+            btn.classList.remove('text-muted', 'hover:text-text-secondary');
+            btn.classList.add('bg-primary', 'text-white', 'font-semibold');
+          }
+          
           state.view[kind] = btn.dataset.view;
           
           // Detect if this is mobile or desktop based on the button's parent
