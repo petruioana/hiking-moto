@@ -462,13 +462,14 @@
     let activeParkingButton = layout === 'desktop' ? activeParkingButtonDesktop : activeParkingButtonMobile;
     
     if (activeParkingButton === newButton) {
-      activeParkingButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-      activeParkingButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+      // Set state BEFORE clearing to prevent re-adding
       if (layout === 'desktop') {
         activeParkingButtonDesktop = null;
       } else {
         activeParkingButtonMobile = null;
       }
+      activeParkingButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
+      activeParkingButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
       clearParkings(layout);
       return false;
     }
