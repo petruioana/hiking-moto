@@ -278,8 +278,11 @@
   let mapDesktop = null, mapMobile = null;
   let currentGPXDesktop = null, currentGPXMobile = null;
   let parkingMarkersDesktop = [], parkingMarkersMobile = [];
-  let activeShowButtonDesktop = null, activeShowButtonMobile = null;
-  let activeParkingButtonDesktop = null, activeParkingButtonMobile = null;
+  
+  // Independent state tracking by route ID
+  let activeGpxRouteIdDesktop = null, activeGpxRouteIdMobile = null;
+  let activeParkingRouteIdDesktop = null, activeParkingRouteIdMobile = null;
+  
   let satOnDesktop = true, satOnMobile = true;
 
   // Initialize maps
@@ -340,16 +343,27 @@
     document.getElementById('btn-clear-desktop').addEventListener('click', () => {
       clearGPX('desktop');
       clearParkings('desktop');
-      if (activeShowButtonDesktop) {
-        activeShowButtonDesktop.classList.remove('bg-blue');
-        activeShowButtonDesktop.classList.add('bg-blue/20');
-        activeShowButtonDesktop = null;
+      
+      // Reset GPX button state
+      if (activeGpxRouteIdDesktop !== null) {
+        const btn = document.querySelector(`[data-gpx-route-id="${activeGpxRouteIdDesktop}"][data-layout="desktop"]`);
+        if (btn) {
+          btn.classList.remove('bg-blue');
+          btn.classList.add('bg-blue/20');
+        }
+        activeGpxRouteIdDesktop = null;
       }
-      if (activeParkingButtonDesktop) {
-        activeParkingButtonDesktop.classList.remove('bg-blue');
-        activeParkingButtonDesktop.classList.add('bg-blue/20');
-        activeParkingButtonDesktop = null;
+      
+      // Reset Parking button state
+      if (activeParkingRouteIdDesktop !== null) {
+        const btn = document.querySelector(`[data-parking-route-id="${activeParkingRouteIdDesktop}"][data-layout="desktop"]`);
+        if (btn) {
+          btn.classList.remove('bg-blue');
+          btn.classList.add('bg-blue/20');
+        }
+        activeParkingRouteIdDesktop = null;
       }
+      
       // Reset weather widget
       document.getElementById('weather-content-desktop').innerHTML = '<div class="text-gray-600">Select a route</div>';
     });
@@ -358,15 +372,25 @@
     document.getElementById('btn-clear-mobile').addEventListener('click', () => {
       clearGPX('mobile');
       clearParkings('mobile');
-      if (activeShowButtonMobile) {
-        activeShowButtonMobile.classList.remove('bg-blue');
-        activeShowButtonMobile.classList.add('bg-blue/20');
-        activeShowButtonMobile = null;
+      
+      // Reset GPX button state
+      if (activeGpxRouteIdMobile !== null) {
+        const btn = document.querySelector(`[data-gpx-route-id="${activeGpxRouteIdMobile}"][data-layout="mobile"]`);
+        if (btn) {
+          btn.classList.remove('bg-blue');
+          btn.classList.add('bg-blue/20');
+        }
+        activeGpxRouteIdMobile = null;
       }
-      if (activeParkingButtonMobile) {
-        activeParkingButtonMobile.classList.remove('bg-blue');
-        activeParkingButtonMobile.classList.add('bg-blue/20');
-        activeParkingButtonMobile = null;
+      
+      // Reset Parking button state
+      if (activeParkingRouteIdMobile !== null) {
+        const btn = document.querySelector(`[data-parking-route-id="${activeParkingRouteIdMobile}"][data-layout="mobile"]`);
+        if (btn) {
+          btn.classList.remove('bg-blue');
+          btn.classList.add('bg-blue/20');
+        }
+        activeParkingRouteIdMobile = null;
       }
     });
 
@@ -423,76 +447,78 @@
     }
   }
 
-  function setActiveShowButton(layout, newButton) {
-    let activeShowButton = layout === 'desktop' ? activeShowButtonDesktop : activeShowButtonMobile;
+  function setActiveShowButton(layout, newButton, routeId) {
+    const activeGpxRouteId = layout === 'desktop' ? activeGpxRouteIdDesktop : activeGpxRouteIdMobile;
     
-    if (activeShowButton === newButton) {
-      // Toggle off - return to inactive state
-      activeShowButton.classList.remove('bg-blue');
-      activeShowButton.classList.add('bg-blue/20');
+    if (activeGpxRouteId === routeId) {
+      // Toggle off - same route clicked again
+      newButton.classList.remove('bg-blue');
+      newButton.classList.add('bg-blue/20');
       if (layout === 'desktop') {
-        activeShowButtonDesktop = null;
+        activeGpxRouteIdDesktop = null;
       } else {
-        activeShowButtonMobile = null;
+        activeGpxRouteIdMobile = null;
       }
       clearGPX(layout);
       return false;
     }
 
     // Deactivate previous button if any
-    if (activeShowButton) {
-      activeShowButton.classList.remove('bg-blue');
-      activeShowButton.classList.add('bg-blue/20');
+    if (activeGpxRouteId !== null) {
+      const prevButton = document.querySelector(`[data-gpx-route-id="${activeGpxRouteId}"][data-layout="${layout}"]`);
+      if (prevButton) {
+        prevButton.classList.remove('bg-blue');
+        prevButton.classList.add('bg-blue/20');
+      }
     }
 
-    // Activate new button
+    // Activate new button and set route ID
     if (layout === 'desktop') {
-      activeShowButtonDesktop = newButton;
+      activeGpxRouteIdDesktop = routeId;
     } else {
-      activeShowButtonMobile = newButton;
+      activeGpxRouteIdMobile = routeId;
     }
     
-    if (newButton) {
-      newButton.classList.remove('bg-blue/20');
-      newButton.classList.add('bg-blue');
-    }
+    newButton.classList.remove('bg-blue/20');
+    newButton.classList.add('bg-blue');
 
     return true;
   }
 
-  function setActiveParkingButton(layout, newButton, coordsStr, title) {
-    let activeParkingButton = layout === 'desktop' ? activeParkingButtonDesktop : activeParkingButtonMobile;
+  function setActiveParkingButton(layout, newButton, routeId, coordsStr, title) {
+    const activeParkingRouteId = layout === 'desktop' ? activeParkingRouteIdDesktop : activeParkingRouteIdMobile;
     
-    if (activeParkingButton === newButton) {
-      // Toggle off - set state BEFORE clearing to prevent re-adding
+    if (activeParkingRouteId === routeId) {
+      // Toggle off - same route clicked again
       if (layout === 'desktop') {
-        activeParkingButtonDesktop = null;
+        activeParkingRouteIdDesktop = null;
       } else {
-        activeParkingButtonMobile = null;
+        activeParkingRouteIdMobile = null;
       }
-      activeParkingButton.classList.remove('bg-blue');
-      activeParkingButton.classList.add('bg-blue/20');
+      newButton.classList.remove('bg-blue');
+      newButton.classList.add('bg-blue/20');
       clearParkings(layout);
       return false;
     }
 
     // Deactivate previous button if any
-    if (activeParkingButton) {
-      activeParkingButton.classList.remove('bg-blue');
-      activeParkingButton.classList.add('bg-blue/20');
+    if (activeParkingRouteId !== null) {
+      const prevButton = document.querySelector(`[data-parking-route-id="${activeParkingRouteId}"][data-layout="${layout}"]`);
+      if (prevButton) {
+        prevButton.classList.remove('bg-blue');
+        prevButton.classList.add('bg-blue/20');
+      }
     }
 
-    // Activate new button
+    // Activate new button and set route ID
     if (layout === 'desktop') {
-      activeParkingButtonDesktop = newButton;
+      activeParkingRouteIdDesktop = routeId;
     } else {
-      activeParkingButtonMobile = newButton;
+      activeParkingRouteIdMobile = routeId;
     }
     
-    if (newButton) {
-      newButton.classList.remove('bg-blue/20');
-      newButton.classList.add('bg-blue');
-    }
+    newButton.classList.remove('bg-blue/20');
+    newButton.classList.add('bg-blue');
 
     clearParkings(layout);
     if (coordsStr && title) {
@@ -627,6 +653,9 @@
       return;
     }
     items.forEach((u, idx) => {
+      // Create unique route ID for upcoming routes
+      const routeId = `${kind}-upcoming-${idx}`;
+      
       const item = document.createElement('div');
       item.className = 'border border-border-light rounded-xl p-4 mb-3 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col gap-3';
       item.dataset.search = u.name || '';
@@ -651,9 +680,11 @@
       showBtn.textContent = 'Show';
       showBtn.disabled = !u.gpx;
       showBtn.title = u.gpx ? 'Show this GPX on the map' : 'No GPX available';
+      showBtn.setAttribute('data-gpx-route-id', routeId);
+      showBtn.setAttribute('data-layout', layout);
       showBtn.addEventListener('click', () => {
         if (!u.gpx) { alert('No GPX available for this route'); return; }
-        if (setActiveShowButton(layout, showBtn)) {
+        if (setActiveShowButton(layout, showBtn, routeId)) {
           loadAndShowGPX(layout, u.gpx);
         }
       });
@@ -696,6 +727,9 @@
     const km = traseu.km ? `${traseu.km} km` : '';
     const difficulty = traseu.difficulty || '';
     const gpx = traseu.gpx || null;
+    
+    // Create unique route ID
+    const routeId = `${kind}-${index}`;
 
     const card = document.createElement('div');
     card.className = 'border border-border-light rounded-xl p-4 mb-3 bg-gradient-to-b from-white/2 to-white/0.5 shadow-sm hover:border-border hover:shadow-md hover:-translate-y-1 transition-all duration-200';
@@ -722,9 +756,11 @@
     btnShow.textContent = 'Show GPX';
     btnShow.disabled = !gpx;
     btnShow.title = gpx ? 'Show this GPX on the map' : 'No GPX available';
+    btnShow.setAttribute('data-gpx-route-id', routeId);
+    btnShow.setAttribute('data-layout', layout);
     btnShow.addEventListener('click', () => {
       if (!gpx) { alert('No GPX available for this route'); return; }
-      if (setActiveShowButton(layout, btnShow)) {
+      if (setActiveShowButton(layout, btnShow, routeId)) {
         loadAndShowGPX(layout, gpx);
       }
     });
@@ -735,9 +771,11 @@
       btnPark.className = 'px-4 py-2 text-sm font-semibold rounded-lg border border-border bg-blue/20 text-white cursor-pointer shadow-sm hover:bg-blue hover:text-white hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm';
       btnPark.textContent = 'Parking';
       btnPark.title = 'Show parking point on map';
+      btnPark.setAttribute('data-parking-route-id', routeId);
+      btnPark.setAttribute('data-layout', layout);
       if (traseu.trailhead && traseu.trailhead.coords) {
         btnPark.addEventListener('click', () => {
-          setActiveParkingButton(layout, btnPark, traseu.trailhead.coords, traseu.trailhead.name || name);
+          setActiveParkingButton(layout, btnPark, routeId, traseu.trailhead.coords, traseu.trailhead.name || name);
         });
       } else {
         btnPark.disabled = true;
