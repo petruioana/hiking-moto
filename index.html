@@ -470,11 +470,6 @@
       activeParkingButton.classList.add('bg-blue/20', 'border-border', 'text-white');
     }
 
-    clearParkings(layout);
-    if (coordsStr && title) {
-      addParkingPoint(layout, coordsStr, title);
-    }
-
     if (layout === 'desktop') {
       activeParkingButtonDesktop = newButton;
     } else {
@@ -484,6 +479,11 @@
     if (newButton) {
       newButton.classList.remove('bg-blue/20', 'border-border', 'text-white');
       newButton.classList.add('bg-blue', 'border-border', 'text-white', 'font-semibold');
+    }
+
+    clearParkings(layout);
+    if (coordsStr && title) {
+      addParkingPoint(layout, coordsStr, title);
     }
 
     return true;
