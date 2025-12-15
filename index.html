@@ -341,13 +341,13 @@
       clearGPX('desktop');
       clearParkings('desktop');
       if (activeShowButtonDesktop) {
-        activeShowButtonDesktop.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-        activeShowButtonDesktop.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+        activeShowButtonDesktop.classList.remove('bg-blue');
+        activeShowButtonDesktop.classList.add('bg-blue/20');
         activeShowButtonDesktop = null;
       }
       if (activeParkingButtonDesktop) {
-        activeParkingButtonDesktop.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-        activeParkingButtonDesktop.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+        activeParkingButtonDesktop.classList.remove('bg-blue');
+        activeParkingButtonDesktop.classList.add('bg-blue/20');
         activeParkingButtonDesktop = null;
       }
       // Reset weather widget
@@ -359,13 +359,13 @@
       clearGPX('mobile');
       clearParkings('mobile');
       if (activeShowButtonMobile) {
-        activeShowButtonMobile.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-        activeShowButtonMobile.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+        activeShowButtonMobile.classList.remove('bg-blue');
+        activeShowButtonMobile.classList.add('bg-blue/20');
         activeShowButtonMobile = null;
       }
       if (activeParkingButtonMobile) {
-        activeParkingButtonMobile.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-        activeParkingButtonMobile.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+        activeParkingButtonMobile.classList.remove('bg-blue');
+        activeParkingButtonMobile.classList.add('bg-blue/20');
         activeParkingButtonMobile = null;
       }
     });
@@ -427,8 +427,9 @@
     let activeShowButton = layout === 'desktop' ? activeShowButtonDesktop : activeShowButtonMobile;
     
     if (activeShowButton === newButton) {
-      activeShowButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-      activeShowButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+      // Toggle off - return to inactive state
+      activeShowButton.classList.remove('bg-blue');
+      activeShowButton.classList.add('bg-blue/20');
       if (layout === 'desktop') {
         activeShowButtonDesktop = null;
       } else {
@@ -438,11 +439,13 @@
       return false;
     }
 
+    // Deactivate previous button if any
     if (activeShowButton) {
-      activeShowButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-      activeShowButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+      activeShowButton.classList.remove('bg-blue');
+      activeShowButton.classList.add('bg-blue/20');
     }
 
+    // Activate new button
     if (layout === 'desktop') {
       activeShowButtonDesktop = newButton;
     } else {
@@ -450,8 +453,8 @@
     }
     
     if (newButton) {
-      newButton.classList.remove('bg-blue/20', 'border-border', 'text-white');
-      newButton.classList.add('bg-blue', 'border-border', 'text-white', 'font-semibold');
+      newButton.classList.remove('bg-blue/20');
+      newButton.classList.add('bg-blue');
     }
 
     return true;
@@ -461,23 +464,25 @@
     let activeParkingButton = layout === 'desktop' ? activeParkingButtonDesktop : activeParkingButtonMobile;
     
     if (activeParkingButton === newButton) {
-      // Set state BEFORE clearing to prevent re-adding
+      // Toggle off - set state BEFORE clearing to prevent re-adding
       if (layout === 'desktop') {
         activeParkingButtonDesktop = null;
       } else {
         activeParkingButtonMobile = null;
       }
-      activeParkingButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-      activeParkingButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+      activeParkingButton.classList.remove('bg-blue');
+      activeParkingButton.classList.add('bg-blue/20');
       clearParkings(layout);
       return false;
     }
 
+    // Deactivate previous button if any
     if (activeParkingButton) {
-      activeParkingButton.classList.remove('bg-blue', 'border-border', 'text-white', 'font-semibold');
-      activeParkingButton.classList.add('bg-blue/20', 'border-border', 'text-white', 'font-semibold');
+      activeParkingButton.classList.remove('bg-blue');
+      activeParkingButton.classList.add('bg-blue/20');
     }
 
+    // Activate new button
     if (layout === 'desktop') {
       activeParkingButtonDesktop = newButton;
     } else {
@@ -485,8 +490,8 @@
     }
     
     if (newButton) {
-      newButton.classList.remove('bg-blue/20', 'border-border', 'text-white');
-      newButton.classList.add('bg-blue', 'border-border', 'text-white', 'font-semibold');
+      newButton.classList.remove('bg-blue/20');
+      newButton.classList.add('bg-blue');
     }
 
     clearParkings(layout);
