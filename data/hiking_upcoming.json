@@ -4,11 +4,11 @@
     "gpx": "./hikeupcoming_gpx/Palingbeek-Gasthuisbossen.gpx"
   },
   {
-    "name": "Mountain Summit Adventure",
-    "gpx": "hikeupcoming_gpx/mountain_summit.gpx"
+    "name": "test",
+    "gpx": "hikeupcoming_gpx/test.gpx"
   },
   {
-    "name": "Forest Trail Discovery",
-    "gpx": "hikeupcoming_gpx/forest_trail.gpx"
+    "name": "test",
+    "gpx": "hikeupcoming_gpx/test.gpx"
   }
 ]
