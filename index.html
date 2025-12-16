@@ -87,7 +87,7 @@
 
 <body class="m-0 bg-bg text-text font-inter antialiased">
   <!-- DESKTOP LAYOUT -->
-  <div id="desktop-layout" class="h-screen flex flex-col overflow-hidden">
+  <div id="desktop-layout" class="min-h-screen flex flex-col">
     <header class="fixed inset-x-0 top-0 h-[200px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md z-[800] px-[18px] py-[18px] box-border backdrop-blur-[10px]">
     <div class="grid grid-cols-[360px_1fr_360px] gap-[18px] w-full items-center">
       <!-- LEFT: Landscape Image Peisaj aligned with hiking column -->
@@ -148,7 +148,7 @@
     </div>
   </header>
 
-  <div class="mt-[200px] h-[calc(100vh-200px)] grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border">
+  <div class="mt-[200px] flex-1 grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border min-h-0">
     <!-- LEFT: Hiking -->
     <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="hiking-panel-desktop">
       <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
@@ -263,7 +263,7 @@
     </div>
 
     <!-- Panouri scrollabile -->
-    <div class="flex flex-col gap-2 px-1 pb-2 pt-2 flex-1 min-h-0" style="height:calc(100vh - 65px - 60vw - 56px);">
+    <div class="flex flex-col gap-2 px-1 pb-2 pt-2 flex-1 min-h-0">
       <aside id="hiking-panel-mobile" class="hidden bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl flex flex-col shadow-sm flex-1 min-h-0 max-h-full overflow-hidden mb-2">
         <!-- Fixed header section at top of panel -->
         <div class="bg-gradient-to-b from-card to-[#121212] p-2 flex flex-col gap-2 border-b border-border-light flex-shrink-0">
