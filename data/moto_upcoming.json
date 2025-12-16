@@ -1,10 +1,10 @@
 [
   {
-    "name": "Alpine Pass Challenge",
-    "gpx": "./motoupcoming_gpx/alpine_pass.gpx"
+    "name": "Test",
+    "gpx": "./motoupcoming_gpx/moto test.gpx"
   },
   {
-    "name": "Coastal Highway Ride",
-    "gpx": "motoupcoming_gpx/coastal_highway.gpx"
+    "name": "test",
+    "gpx": "motoupcoming_gpx/test.gpx"
   }
 ]
