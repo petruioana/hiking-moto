@@ -78,8 +78,8 @@
     #desktop-layout { display: block; }
     #mobile-layout { display: none; }
 
-    /* Mobile layout */
-    @media (max-width: 768px) {
+    /* Mobile layout - only portrait phones */
+    @media (max-width: 768px) and (orientation: portrait) {
       #desktop-layout { display: none; }
       #mobile-layout { display: block; }
     }
@@ -87,9 +87,10 @@
 
 <body class="m-0 bg-bg text-text font-inter antialiased">
   <!-- DESKTOP LAYOUT -->
-  <div id="desktop-layout" class="h-screen flex flex-col overflow-hidden">
-    <header class="fixed inset-x-0 top-0 h-[200px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] flex items-center justify-center border-b border-border shadow-md z-[800] px-[18px] py-[18px] box-border backdrop-blur-[10px]">
-    <div class="grid grid-cols-[360px_1fr_360px] gap-[18px] w-full items-center">
+  <div id="desktop-layout" class="min-h-screen flex flex-col xl:h-screen xl:overflow-hidden">
+    <header class="fixed inset-x-0 top-0 h-[200px] bg-gradient-to-b from-black via-bg to-[#0f0f0f] border-b border-border shadow-md z-[800] backdrop-blur-[10px] overflow-x-auto">
+      <div class="flex items-center justify-center h-full px-[18px] py-[18px] min-w-max">
+        <div class="grid gap-[18px] items-center" style="grid-template-columns: minmax(280px, 360px) minmax(600px, 1fr) minmax(280px, 360px); min-width: 1200px;">
       <!-- LEFT: Landscape Image Peisaj aligned with hiking column -->
       <div class="w-full h-[140px] rounded-2xl overflow-hidden border-2 border-border-light shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 flex-shrink-0">
         <img src="images/peisaj.jpg" alt="Hiking Landscape" loading="lazy" class="w-full h-full object-cover brightness-75" />
@@ -144,11 +145,11 @@
       <!-- RIGHT: Landscape Image Moto aligned with motorcycle column -->
       <div class="w-full h-[140px] rounded-2xl overflow-hidden border-2 border-border-light shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 flex-shrink-0">
         <img src="images/moto.jpg" alt="Motorcycle Landscape" loading="lazy" class="w-full h-full object-cover brightness-75" />
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div class="mt-[200px] h-[calc(100vh-200px)] grid grid-cols-[360px_1fr_360px] gap-[18px] px-[18px] pb-[18px] box-border">
+  <div class="mt-[200px] h-[calc(100vh-200px)] grid gap-[18px] px-[18px] pb-[18px] box-border" style="grid-template-columns: minmax(280px, 360px) minmax(600px, 1fr) minmax(280px, 360px);">
     <!-- LEFT: Hiking -->
     <aside class="bg-gradient-to-b from-card to-[#121212] border border-border-light rounded-xl p-4 box-border h-full max-h-full flex flex-col gap-3 overflow-hidden shadow-sm hover:border-border hover:shadow-md transition-all duration-200" id="hiking-panel-desktop">
       <h3 class="text-lg font-semibold flex justify-between items-center text-text tracking-[-0.01em] mb-0">Hiking Routes
