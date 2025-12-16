@@ -83,6 +83,25 @@
       #desktop-layout { display: none; }
       #mobile-layout { display: block; }
     }
+
+    /* Tablet-specific layout adjustments (width > 768px and ≤ 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      #desktop-layout header {
+        height: 250px !important;
+      }
+      
+      #desktop-layout .mt-\[200px\] {
+        margin-top: 250px !important;
+      }
+      
+      #desktop-layout .h-\[calc\(100vh-200px\)\] {
+        height: calc(100vh - 250px) !important;
+      }
+      
+      #desktop-layout header > div > div {
+        gap: 24px !important;
+      }
+    }
   </style>
 
 <body class="m-0 bg-bg text-text font-inter antialiased">
@@ -876,8 +895,9 @@
     actions.className = 'flex gap-2 justify-center w-full pt-2 border-t border-border-light mt-2';
 
     const btnShow = document.createElement('button');
-    const btnPadding = layout === 'desktop' ? 'py-1' : 'py-2';
-    const btnTextSize = 'text-sm';
+    // Hiking buttons smaller in desktop
+    const btnPadding = layout === 'desktop' ? (kind === 'hiking' ? 'py-0.5' : 'py-1') : 'py-2';
+    const btnTextSize = layout === 'desktop' && kind === 'hiking' ? 'text-xs' : 'text-sm';
     btnShow.className = `px-4 ${btnPadding} ${btnTextSize} font-semibold rounded-lg border border-border bg-blue/20 text-white cursor-pointer shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-sm`;
     btnShow.textContent = 'Show GPX';
     btnShow.disabled = !gpx;
