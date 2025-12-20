@@ -46,9 +46,9 @@
 
   "motorcycle": [
     {
-      "name": "Test",
+      "name": "Test1",
       "km": 1001,
-      "difficulty": "test",
+      "difficulty": "test1",
       "gpx": "motorcycle/moto test.gpx",
       "trailhead": { "name": "test", "coords": "47.54321, 11.98765" }
     }
