@@ -41,7 +41,7 @@
       "difficulty": "Easy",
       "gpx": "hiking/Test.gpx",
       "trailhead": { "name": "Palingbeek", "coords": "50.813895, 2.920541" }
-    },
+    }
   ],
 
   "motorcycle": [
