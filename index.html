@@ -150,10 +150,10 @@
             <div id="weather-content-desktop" class="text-center">
               <div class="flex flex-col gap-1 items-center">
                 <div class="text-base font-bold text-white">Weather</div>
-                <div class="text-xs text-gray-400">Check the Trail Conditions</div>
+                <div class="text-xs text-gray-400">Check the Route Conditions</div>
                 <div class="text-xs text-gray-500 mt-2 leading-tight">
                   <div>Press Show GPX</div>
-                  <div>to see live trail weather</div>
+                  <div>to see live route weather</div>
                 </div>
               </div>
             </div>
@@ -256,7 +256,7 @@
           <div class="flex flex-col gap-0.5 items-center justify-center text-white text-[6px] leading-tight mt-0.5">
             <div>Press Show GPX</div>
             <div>to see live</div>
-            <div>trail weather</div>
+            <div>route weather</div>
           </div>
         </div>
       </div>
@@ -379,33 +379,33 @@
     baseSatMobile.addTo(mapMobile);
 
     // Desktop tile toggle
-    document.getElementById('btn-tiles-desktop').textContent = 'Map';
+    document.getElementById('btn-tiles-desktop').textContent = '🗺️ Road Map';
     document.getElementById('btn-tiles-desktop').addEventListener('click', () => {
       if (!satOnDesktop) {
         baseSatDesktop.addTo(mapDesktop);
         baseOSMDesktop.remove();
-        document.getElementById('btn-tiles-desktop').textContent = 'Map';
+        document.getElementById('btn-tiles-desktop').textContent = '🗺️ Road Map';
         satOnDesktop = true;
       } else {
         baseOSMDesktop.addTo(mapDesktop);
         baseSatDesktop.remove();
-        document.getElementById('btn-tiles-desktop').textContent = 'Satellite';
+        document.getElementById('btn-tiles-desktop').textContent = '🛰️ Satellite';
         satOnDesktop = false;
       }
     });
 
     // Mobile tile toggle
-    document.getElementById('btn-tiles-mobile').textContent = 'Satellite';
+    document.getElementById('btn-tiles-mobile').textContent = '🛰️ Satellite';
     document.getElementById('btn-tiles-mobile').addEventListener('click', () => {
       if (!satOnMobile) {
         baseSatMobile.addTo(mapMobile);
         baseOSMMobile.remove();
-        document.getElementById('btn-tiles-mobile').textContent = 'Map';
+        document.getElementById('btn-tiles-mobile').textContent = '🗺️ Road Map';
         satOnMobile = true;
       } else {
         baseOSMMobile.addTo(mapMobile);
         baseSatMobile.remove();
-        document.getElementById('btn-tiles-mobile').textContent = 'Satellite';
+        document.getElementById('btn-tiles-mobile').textContent = '🛰️ Satellite';
         satOnMobile = false;
       }
     });
@@ -439,10 +439,10 @@
       document.getElementById('weather-content-desktop').innerHTML = `
         <div class="flex flex-col gap-1 items-center">
           <div class="text-base font-bold text-white">Weather</div>
-          <div class="text-xs text-gray-400">Check the Trail Conditions</div>
+          <div class="text-xs text-gray-400">Check the Route Conditions</div>
           <div class="text-xs text-gray-500 mt-2 leading-tight">
             <div>Press Show GPX</div>
-            <div>to see live trail weather</div>
+            <div>to see live route weather</div>
           </div>
         </div>
       `;
@@ -480,7 +480,7 @@
           <div class="flex flex-col gap-0.5 items-center justify-center text-white text-[6px] leading-tight mt-0.5">
             <div>Press Show GPX</div>
             <div>to see live</div>
-            <div>trail weather</div>
+            <div>route weather</div>
           </div>
         `;
       }
@@ -580,10 +580,10 @@
         document.getElementById('weather-content-desktop').innerHTML = `
           <div class="flex flex-col gap-1 items-center">
             <div class="text-base font-bold text-white">Weather</div>
-            <div class="text-xs text-gray-400">Check the Trail Conditions</div>
+            <div class="text-xs text-gray-400">Check the Route Conditions</div>
             <div class="text-xs text-gray-500 mt-2 leading-tight">
               <div>Press Show GPX</div>
-              <div>to see live trail weather</div>
+              <div>to see live route weather</div>
             </div>
           </div>
         `;
@@ -596,7 +596,7 @@
             <div class="flex flex-col gap-0.5 items-center justify-center text-white text-[6px] leading-tight mt-0.5">
               <div>Press Show GPX</div>
               <div>to see live</div>
-              <div>trail weather</div>
+              <div>route weather</div>
             </div>
           `;
         }
