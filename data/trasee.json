@@ -35,6 +35,13 @@
       "gpx": "hiking/zwin.gpx",
       "trailhead": { "name": "Zwin-EXPENSIVE", "coords": "51.358816, 3.352698" }
     },
+    {
+      "name": "Zwarte-Rodeberg",
+      "km": 11.52,
+      "difficulty": "Easy",
+      "gpx": "Zwarte-Rodeberg.gpx",
+      "trailhead": { "name": "Zwarte-Rodeberg", "coords": "50.784623, 2.758012" }
+    },
      {
       "name": "Test",
       "km": 9.67,
