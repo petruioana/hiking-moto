@@ -42,6 +42,13 @@
       "gpx": "hiking/Zwarte-Rodeberg.gpx",
       "trailhead": { "name": "Zwarte-Rodeberg", "coords": "50.784623, 2.758012" }
     },
+    {
+      "name": "Vloethemveld",
+      "km": 9.85,
+      "difficulty": "Easy",
+      "gpx": "hiking/vloethemveld.gpx",
+      "trailhead": { "name": "Parking2-Campus", "coords": "51.142205, 3.117543" }
+    },
      {
       "name": "Test",
       "km": 9.67,
